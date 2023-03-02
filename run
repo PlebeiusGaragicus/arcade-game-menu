@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# change folder to the folder where this script is located
+cd "$(dirname "$0")"
+
+source venv/bin/activate
+
+# TODO .... umm... need to fix this eventually...
+# gamefolder="/Users/micah/Downloads/ARCADE1/GAMES"
+# exec python3 -m src "$gamefolder"
+
+exec python3 -m src "$HOME/GAMES"
