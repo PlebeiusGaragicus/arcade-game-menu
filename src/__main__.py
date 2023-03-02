@@ -4,7 +4,6 @@ import logging
 from src.config import FULLSCREEN
 from src.helpers import create_window
 
-
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG,

@@ -15,20 +15,27 @@ class GameSelectView(arcade.View):
     def __init__(self):
         super().__init__()
 
+        self.joystick_locks = {}
         joysticks = arcade.get_game_controllers()
         if joysticks:
-            self.joystick = joysticks[0]
-            self.joystick.open()
-            logging.debug(f"Joystick name: {self.joystick.device.name}")
+            self.joystick = []
+            for j in joysticks:
+                # logging.debug(f"Joystick name: {self.joystick.device.name}")
+                logging.debug(f"Joystick name: {j.device.name}")
+
+                self.joystick_locks[j] = False
+                self.joystick.append(j)
+                j.open()
+                # self.joystick.open()
+
 
         else:
             logging.warning("There are no joysticks, plug in a joystick and run again.")
             self.joystick = None
         
-        self.joystick_lock = False
+        # self.joystick_lock = False
 
         self.game_list = GameFinder.find_games()
-        logging.debug(self.game_list)
         self.selected = 0
         self.move_selection(0) # we need to call this to load the image
 
@@ -42,7 +49,9 @@ class GameSelectView(arcade.View):
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
 
         if self.joystick:
-            self.joystick.push_handlers(self)
+            for j in self.joystick:
+                j.push_handlers(self)
+                # self.joystick.push_handlers(self)
 
 
 
@@ -51,7 +60,9 @@ class GameSelectView(arcade.View):
         arcade.get_window().minimize()
 
         if self.joystick:
-            self.joystick.pop_handlers()
+            for j in self.joystick:
+                j.pop_handlers()
+                # self.joystick.pop_handlers()
 
         # create a thread that checks if the launched game is still running
         t = threading.Thread(target=lambda: launch_game( self.game_list[self.selected] ))
@@ -98,78 +109,97 @@ class GameSelectView(arcade.View):
 
 
 
+
+
+
+
     def on_joyaxis_motion(self, joystick, axis, value):
-        logging.debug(f"Joystick {joystick.device} axis {axis} moved to {value}")
+        # logging.debug(f"Joystick {joystick} axis {axis} moved to {value}")
 
-        if axis == 'y':
-            if value < 0.5 and value > -0.5:
-                self.joystick_lock = False
+        # joystick_lock = self.joystick_locks[joystick]
 
-            if self.joystick_lock:
-                return
+        # if axis == 'y':
+        #     if value < 0.5 and value > -0.5:
+        #         self.joystick_locks[joystick] = False
 
-            if value < -0.5:
-                logging.debug("JOYSTICK UP")
-                self.joystick_lock = True
-                self.move_selection(-1)
-            elif value > 0.5:
-                logging.debug("JOYSTICK DOWN")
-                self.joystick_lock = True
-                self.move_selection(1)
+        #     if self.joystick_locks[joystick]:
+        #         return
+
+        #     if value < -0.5:
+        #         logging.debug("JOYSTICK UP")
+        #         self.joystick_locks[joystick] = True
+        #         self.move_selection(-1)
+        #     elif value > 0.5:
+        #         logging.debug("JOYSTICK DOWN")
+        #         self.joystick_locks[joystick] = True
+        #         self.move_selection(1)
         
         if axis == 'x':
             if value < 0.5 and value > -0.5:
-                self.joystick_lock = False
+                self.joystick_locks[joystick] = False
 
-            if self.joystick_lock:
+            if self.joystick_locks[joystick]:
                 return
 
             if value < -0.5:
                 logging.debug("JOYSTICK LEFT")
-                self.joystick_lock = True
+                self.joystick_locks[joystick] = True
                 self.move_selection(1)
             elif value > 0.5:
                 logging.debug("JOYSTICK RIGHT")
-                self.joystick_lock = True
+                self.joystick_locks[joystick] = True
                 self.move_selection(-1)
 
 
 
     def on_joyhat_motion(self, joystick, hat_x, hat_y):
-        logging.debug(f"Joystick {joystick.device} hat moved to ({hat_x}, {hat_y})")
+        # logging.debug(f"Joystick {joystick.device} hat moved to ({hat_x}, {hat_y})")
 
         if hat_y == 0 and hat_x == 0:
-            self.joystick_lock = False
+            self.joystick_locks[joystick] = False
 
-        if self.joystick_lock:
+        if self.joystick_locks[joystick]:
                 return
 
         # TODO: I need to ensure that additional up/down aren't registered if user presses a sideways key
-        if hat_y == 1:
-            logging.debug("HAT UP")
-            self.joystick_lock = True
-            self.move_selection(-1)
-        elif hat_y == -1:
-            logging.debug("HAT DOWN")
-            self.joystick_lock = True
-            self.move_selection(1)
+        # if hat_y == 1:
+        #     logging.debug("HAT UP")
+        #     self.joystick_locks[joystick] = True
+        #     self.move_selection(-1)
+        # elif hat_y == -1:
+        #     logging.debug("HAT DOWN")
+        #     self.joystick_locks[joystick] = True
+        #     self.move_selection(1)
 
         if hat_x == 1:
             logging.debug("HAT RIGHT")
-            self.joystick_lock = True
+            self.joystick_locks[joystick] = True
             self.move_selection(-1)
         elif hat_x == -1:
             logging.debug("HAT LEFT")
-            self.joystick_lock = True
+            self.joystick_locks[joystick] = True
             self.move_selection(1)
 
 
 
     def on_joybutton_press(self, _joystick, button):
-        if self.joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
+        if _joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
             self.on_snes_button_press(button)
-        elif self.joystick.device.name == "Pro Controller":
+        elif _joystick.device.name == "Pro Controller":
             self.on_pro_controller_button_press(button)
+        elif "DragonRise Inc." in _joystick.device.name:
+            self.on_dragonrise_button_press(button)
+
+        # if self.joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
+        #     self.on_snes_button_press(button)
+        # elif self.joystick.device.name == "Pro Controller":
+        #     self.on_pro_controller_button_press(button)
+        # elif "DragonRise Inc." in self.joystick.device.name:
+        #     self.on_dragonrise_button_press(button)
+
+
+    def on_dragonrise_button_press(self, button):
+        logging.debug("Button {} down".format(button))
 
 
 

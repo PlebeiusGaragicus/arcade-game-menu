@@ -1,0 +1,4 @@
+{
+    "sync-rsync.remote": "satoshi@arcade1.local:/home/satoshi/arcade-game-menu/",
+    "sync-rsync.onSaveIndividual": true
+}
