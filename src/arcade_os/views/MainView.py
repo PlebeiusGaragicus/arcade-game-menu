@@ -7,7 +7,7 @@ import arcade
 
 from arcade_os.app import app, SHOW_MOUSE
 from arcade_os.input import SNESButton, N64Button
-from arcade_os.views.LaunchView import LaunchView
+from arcade_os.views.BlankView import BlankView
 from arcade_os.functions import launch_game, search_for_games
 
 
@@ -69,7 +69,7 @@ class MainView(arcade.View):
         t = threading.Thread(target=lambda: launch_game( self.game_list[self.selected] ))
         t.start()
 
-        view = LaunchView()
+        view = BlankView(return_view=self)
         self.window.show_view(view)
 
 

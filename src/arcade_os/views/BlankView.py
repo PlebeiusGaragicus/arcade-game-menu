@@ -8,7 +8,7 @@ from arcade_os.app import FULLSCREEN
 
 
 
-class LaunchView(arcade.View):
+class BlankView(arcade.View):
     def __init__(self, return_view: arcade.View):
         super().__init__()
 
@@ -16,8 +16,6 @@ class LaunchView(arcade.View):
 
 
 
-    # def on_draw(self):
-    #     arcade.start_render()
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.BLACK)
@@ -38,4 +36,4 @@ class LaunchView(arcade.View):
             if FULLSCREEN:
                 arcade.get_window().set_fullscreen(True)
 
-            self.window.show_view( self.return_view)
+            self.window.show_view( self.return_view )
