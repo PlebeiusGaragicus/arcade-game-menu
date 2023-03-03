@@ -1,12 +1,15 @@
 import arcade
 import logging
 
+
+
 class SettingsView(arcade.View):
     def __init__(self, return_view):
         super().__init__()
 
         self.return_view = return_view
 
+        self.width, self.height = self.window.get_size()
 
 
     def on_show_view(self):
@@ -15,10 +18,9 @@ class SettingsView(arcade.View):
 
 
     def on_draw(self):
-        width, height = self.window.get_size()
 
-        self.clear()
-        arcade.draw_text("Settings", width / 2, height / 2,
+        self.window.clear()
+        arcade.draw_text("Settings", self.width / 2, self.height / 2,
                          arcade.color.BLACK, font_size=30, anchor_x="center")
 
 

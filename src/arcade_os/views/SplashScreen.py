@@ -25,7 +25,14 @@ class SplashScreen(arcade.View):
 
     def on_update(self, delta_time):
         if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
-            self.show_next_view()
+            from arcade_os.views.MainView import MainView
+
+            # create and show the next view (in this case, a new instance of MyGame)
+            # next_view = AdventureView()
+            next_view = MainView()
+            # next_view.setup()
+            self.window.show_view(next_view)
+
 
 
 
@@ -41,13 +48,3 @@ class SplashScreen(arcade.View):
                          font_size=30, anchor_x="center")
         self.alpha = min(self.alpha + 5, 255)  # increase alpha up to 255
 
-
-
-    def show_next_view(self):
-        # from src.views.adventure_view import AdventureView
-        from arcade_os.views.MainView import MainView
-        # create and show the next view (in this case, a new instance of MyGame)
-        # next_view = AdventureView()
-        next_view = MainView()
-        # next_view.setup()
-        self.window.show_view(next_view)

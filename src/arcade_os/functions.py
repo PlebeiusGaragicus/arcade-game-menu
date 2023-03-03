@@ -30,6 +30,29 @@ def launch_game(game: str):
 
 
 
+def launch_process(cmd: str, process_type: GameTypes):
+    # NOTE: we can't do this here, we need to do it in the main thread
+    # arcade.get_window().minimize()
+
+
+    if process_type == GameTypes.PYTHON:
+        cmd = f"{game['path']}/run"
+        logging.debug(f"{cmd=}")
+    elif process_type == GameTypes.SNES:
+        cmd = SNES9X_EMULATOR_PATH + " \"" + game['path'] + "/" + game['name'] + ".zip\""
+        # I CAN ONLY TEST THIS ON A DEBIAN MACHINE WITH SNES9X INSTALLED
+        logging.debug(f"{cmd=}")
+        return
+
+    process = subprocess.Popen(args="", executable=cmd , stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    output, error = process.communicate()
+    logging.debug(f"{output=}")
+    logging.debug(f"{error=}")
+
+
+
+
+
 def search_for_games():
 
     game_folder = app.get_instance().game_folder

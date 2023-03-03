@@ -5,9 +5,10 @@ import arcade
 
 
 
-from arcade_os.app import app, SHOW_MOUSE
+from arcade_os.app import SHOW_MOUSE
 from arcade_os.input import SNESButton, N64Button
 from arcade_os.views.BlankView import BlankView
+from arcade_os.views.SettingsView import SettingsView
 from arcade_os.functions import launch_game, search_for_games
 
 
@@ -49,6 +50,8 @@ class MainView(arcade.View):
     def on_show_view(self):
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
 
+        
+
         if self.joystick:
             for j in self.joystick:
                 j.push_handlers(self)
@@ -69,8 +72,7 @@ class MainView(arcade.View):
         t = threading.Thread(target=lambda: launch_game( self.game_list[self.selected] ))
         t.start()
 
-        view = BlankView(return_view=self)
-        self.window.show_view(view)
+        self.window.show_view( BlankView(return_view=self) )
 
 
 
@@ -249,6 +251,12 @@ class MainView(arcade.View):
 
 
 
+    def on_mouse_motion(self, x, y, delta_x, delta_y):
+        self.mx = x
+        self.my = y
+
+
+
     def on_key_press(self, key, modifiers):
         logging.debug(f"{key=} {modifiers=}")
 
@@ -270,8 +278,9 @@ class MainView(arcade.View):
         if key in [arcade.key.Q, arcade.key.ESCAPE]:
             arcade.close_window()
 
+        # if key in [arcade.key.F]:
+        #     app.FULL = not self.fullscreen
+        #     arcade.set_fullscreen(self.fullscreen)
 
-
-    def on_mouse_motion(self, x, y, delta_x, delta_y):
-        self.mx = x
-        self.my = y
+        if key == arcade.key.S:
+            self.window.show_view( SettingsView( return_view=self ) )
