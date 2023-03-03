@@ -1,5 +1,11 @@
+from enum import Enum, auto
+
+
+
 MOVEMENT_SPEED = 5
 DEAD_ZONE = 0.05
+
+
 
 class SNESButton():
     """ Enum for SNES controller buttons """
@@ -15,6 +21,8 @@ class SNESButton():
     DOWN: int = 9
     LEFT: int = 10
     RIGHT: int = 11
+
+
 
 class N64Button():
     """ Enum for N64 controller buttons """
@@ -36,6 +44,7 @@ class N64Button():
     RIGHT: int = 7
 
 
+
 class DragonRiseButton():
     """ Enum for DragonRise controller buttons """
     A: int = 0
@@ -50,3 +59,21 @@ class DragonRiseButton():
     DOWN: int = 9
     LEFT: int = 10
     RIGHT: int = 11
+
+
+
+class InputStyle(Enum):
+    KEYBOARD: int = auto()
+    SNES: int = auto()
+    N64: int = auto()
+    DRAGONRISE: int = auto()
+
+
+
+class InputModality:
+    def __init__(self, controller, input_style: InputStyle = InputStyle.KEYBOARD, button_map: dict = None):
+        self.controller = controller
+        self.input_style = input_style
+        self.button_map = button_map
+
+        self.repeat_lock = False

@@ -3,7 +3,7 @@ import logging
 
 import arcade
 
-from src.config import SPLASH_SCREEN_TIME_DELAY
+from src.utilities.launch import SPLASH_SCREEN_TIME_DELAY
 
 class SplashScreen(arcade.View):
     def __init__(self):

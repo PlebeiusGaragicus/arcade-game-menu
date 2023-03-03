@@ -1,28 +1,12 @@
 import subprocess
 import logging
 
-import arcade
+from src.app import SNES9X_EMULATOR_PATH
 
-from src.config import GameTypes, SCREEN_TITLE, SNES9X_EMULATOR_PATH
-from .views.SplashScreen import SplashScreen
-
-
-
-def create_window(fullscreen: bool = False):
-    # mouse_cursor_image = arcade.load_texture("assets/fire.png")
-    # cursor = ImageMouseCursor(mouse_cursor_image, 0, 0)
-
-    width, height = arcade.get_display_size()
-
-    if fullscreen:
-        window = arcade.Window(title=SCREEN_TITLE, fullscreen=True)
-    else:
-        window = arcade.Window(width=width, height=height, title=SCREEN_TITLE)
-
-    view = SplashScreen()
-    window.show_view(view)
-    window.set_mouse_visible(False)
-    arcade.run()
+from enum import Enum, auto
+class GameTypes(Enum):
+    PYTHON = auto()
+    SNES = auto()
 
 
 

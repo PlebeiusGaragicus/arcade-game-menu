@@ -2,11 +2,23 @@ import os
 import sys
 import logging
 
-from src.config import GameTypes
+from src.utilities.launch import GameTypes
+
+
 
 class GameFinder:
     def find_games():
-        game_folder = sys.argv[1]
+
+        # if no arguments are passed, show error
+        if len(sys.argv) == 1:
+            logging.critical("No game folder given - quitting")
+            game_folder = "~/GAMES"
+            # sys.exit(1)
+        else:
+            game_folder = sys.argv[1]
+            logging.debug(f"using supplied game folder: {sys.argv[1]}")
+
+
         logging.debug(f"{game_folder=}")
 
         games = []

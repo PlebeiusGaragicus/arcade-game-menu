@@ -2,7 +2,7 @@ import arcade
 import threading
 import logging
 
-from src.config import FULLSCREEN
+from src.utilities.launch import FULLSCREEN
 
 class BlankView(arcade.View):
     def __init__(self):

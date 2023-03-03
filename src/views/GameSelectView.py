@@ -3,11 +3,11 @@ import threading
 
 import arcade
 
-from src.config import SHOW_MOUSE
+from src.utilities.launch import SHOW_MOUSE
 from src.helpers import launch_game
-from src.input import SNESButton, N64Button
+from control.input import SNESButton, N64Button
 from src.views.BlankView import BlankView
-from src.GameFinder import GameFinder
+from src.utilities.GameFinder import GameFinder
 
 
 
@@ -183,6 +183,9 @@ class GameSelectView(arcade.View):
 
 
     def on_joybutton_press(self, _joystick, button):
+        print(_joystick.device.name)
+        print(_joystick.device.manufacturer)
+
         if _joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
             self.on_snes_button_press(button)
         elif _joystick.device.name == "Pro Controller":
