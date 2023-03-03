@@ -9,4 +9,9 @@ source venv/bin/activate
 # gamefolder="/Users/micah/Downloads/ARCADE1/GAMES"
 # exec python3 -m src "$gamefolder"
 
-exec python3 -m src "$HOME/GAMES"
+# OLD WAY
+# exec python3 -m src "$HOME/GAMES"
+
+# NEW WAY
+# exec python3 src/arcade_os/start.py "PASS THE GAME FOLDER HERE IF YOU HAVE SOMETHING CUSTOM!!"
+exec python3 src/start.py

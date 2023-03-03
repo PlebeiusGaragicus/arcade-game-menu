@@ -70,10 +70,33 @@ class InputStyle(Enum):
 
 
 
-class InputModality:
-    def __init__(self, controller, input_style: InputStyle = InputStyle.KEYBOARD, button_map: dict = None):
-        self.controller = controller
-        self.input_style = input_style
-        self.button_map = button_map
+# class InputModality:
+#     def __init__(self, controller, input_style: InputStyle = InputStyle.KEYBOARD, button_map: dict = None):
+#         self.controller = controller
+#         self.input_style = input_style
+#         self.button_map = button_map
 
-        self.repeat_lock = False
+#         self.repeat_lock = False
+
+
+
+
+
+# class InputMapping(arcade.View):
+#     def __init__(self, game_select_view, input_style, controller):
+#         super().__init__()
+#         self.next_view = GameSelectView
+
+
+
+#     def on_show_view(self):
+#         arcade.set_background_color(arcade.color.SMOKY_BLACK)
+
+
+
+#     def on_draw(self):
+#         width, height = self.window.get_size()
+
+#         # arcade.start_render()
+#         self.window.clear()
+#         arcade.draw_text("Map inputs", width // 2, height * 0.95, arcade.color.YELLOW_ROSE, font_size=24, bold=True, align="center", width=width, anchor_x="center", anchor_y="center")

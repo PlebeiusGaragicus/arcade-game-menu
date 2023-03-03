@@ -3,7 +3,11 @@ import logging
 
 import arcade
 
-from src.utilities.launch import SPLASH_SCREEN_TIME_DELAY
+
+
+from arcade_os.config import SPLASH_SCREEN_TIME_DELAY
+
+
 
 class SplashScreen(arcade.View):
     def __init__(self):
@@ -20,8 +24,6 @@ class SplashScreen(arcade.View):
 
 
     def on_update(self, delta_time):
-        # logging.debug(f"delta_time: {delta_time}")
-
         if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
             self.show_next_view()
 
@@ -43,9 +45,9 @@ class SplashScreen(arcade.View):
 
     def show_next_view(self):
         # from src.views.adventure_view import AdventureView
-        from src.views.GameSelectView import GameSelectView
+        from arcade_os.views.MainView import MainView
         # create and show the next view (in this case, a new instance of MyGame)
         # next_view = AdventureView()
-        next_view = GameSelectView()
+        next_view = MainView()
         # next_view.setup()
         self.window.show_view(next_view)

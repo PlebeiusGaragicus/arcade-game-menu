@@ -3,15 +3,16 @@ import threading
 
 import arcade
 
-from src.utilities.launch import SHOW_MOUSE
-from src.helpers import launch_game
-from control.input import SNESButton, N64Button
-from src.views.BlankView import BlankView
-from src.utilities.GameFinder import GameFinder
+
+
+from arcade_os.app import app, SHOW_MOUSE
+from arcade_os.input import SNESButton, N64Button
+from arcade_os.views.LaunchView import LaunchView
+from arcade_os.functions import launch_game, search_for_games
 
 
 
-class GameSelectView(arcade.View):
+class MainView(arcade.View):
     def __init__(self):
         super().__init__()
 
@@ -32,10 +33,10 @@ class GameSelectView(arcade.View):
         else:
             logging.warning("There are no joysticks, plug in a joystick and run again.")
             self.joystick = None
-        
-        # self.joystick_lock = False
 
-        self.game_list = GameFinder.find_games()
+
+        # self.game_list = GameFinder.find_games()
+        self.game_list = search_for_games()
         self.selected = 0
         self.move_selection(0) # we need to call this to load the image
 
@@ -68,7 +69,7 @@ class GameSelectView(arcade.View):
         t = threading.Thread(target=lambda: launch_game( self.game_list[self.selected] ))
         t.start()
 
-        view = BlankView()
+        view = LaunchView()
         self.window.show_view(view)
 
 
