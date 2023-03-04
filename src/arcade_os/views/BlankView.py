@@ -3,7 +3,6 @@ import threading
 import logging
 
 
-
 from arcade_os.app import FULLSCREEN
 
 
@@ -16,10 +15,8 @@ class BlankView(arcade.View):
 
 
 
-
     def on_show_view(self):
         arcade.set_background_color(arcade.color.BLACK)
-
 
 
 
@@ -29,7 +26,7 @@ class BlankView(arcade.View):
         if threading.active_count() == 1:
             logging.info("game has exited - switching back!")
 
-            # maximize doesn't work... but activate does... shrug emoji here :shrug:
+            # maximize doesn't work... but activate does... :shrug:
             # arcade.get_window().maximize()
             arcade.get_window().activate()
 

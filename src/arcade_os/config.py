@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-FULLSCREEN = True
+FULLSCREEN = False
 SHOW_MOUSE = False
 SCREEN_TITLE = "Starting Template"
 SPLASH_SCREEN_TIME_DELAY = 0.5

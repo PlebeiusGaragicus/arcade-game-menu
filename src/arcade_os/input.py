@@ -7,6 +7,29 @@ DEAD_ZONE = 0.05
 
 
 
+InputMapping = {
+    "up": None,
+    "down": None,
+    "left": None,
+    "right": None,
+    "a": None,
+    "b": None,
+    "x": None,
+    "y": None,
+    "l": None,
+    "r": None,
+    "select": None,
+    "start": None,
+
+    "rewind": None,
+    "quit": None,
+    "save_state": None,
+    "load_state": None,
+}
+
+
+
+
 class SNESButton():
     """ Enum for SNES controller buttons """
     A: int = 0

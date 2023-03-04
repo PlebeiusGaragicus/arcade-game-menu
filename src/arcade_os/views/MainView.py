@@ -5,11 +5,11 @@ import arcade
 
 
 
-from arcade_os.app import SHOW_MOUSE
+from arcade_os.app import app
+from arcade_os.config import SHOW_MOUSE
 from arcade_os.input import SNESButton, N64Button
 from arcade_os.views.BlankView import BlankView
 from arcade_os.views.SettingsView import SettingsView
-from arcade_os.functions import launch_game, search_for_games
 
 
 
@@ -37,9 +37,8 @@ class MainView(arcade.View):
 
 
         # self.game_list = GameFinder.find_games()
-        self.game_list = search_for_games()
+        self.game_list = app.get_instance().game_list
         self.selected = 0
-        self.move_selection(0) # we need to call this to load the image
 
         self.mx = 0
         self.my = 0
@@ -50,7 +49,7 @@ class MainView(arcade.View):
     def on_show_view(self):
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
 
-        
+        self.move_selection(0) # we need to call this to load the image
 
         if self.joystick:
             for j in self.joystick:
@@ -69,7 +68,7 @@ class MainView(arcade.View):
                 # self.joystick.pop_handlers()
 
         # create a thread that checks if the launched game is still running
-        t = threading.Thread(target=lambda: launch_game( self.game_list[self.selected] ))
+        t = threading.Thread(target=lambda: app.get_instance().launch_game( self.selected ))
         t.start()
 
         self.window.show_view( BlankView(return_view=self) )
@@ -84,7 +83,7 @@ class MainView(arcade.View):
         # arcade.draw_text("Game Select", width // 2, height * 0.95, arcade.color.YELLOW_ROSE, font_size=24, bold=True, align="center", width=width, anchor_x="center", anchor_y="center")
 
         # display the image.jpg in the selected game folder
-        arcade.draw_texture_rectangle(width//2, height//2, width, height, self.image)
+        arcade.draw_texture_rectangle(width//2, height//2, width, height, self.game_list[self.selected]['image'])
 
         # for i, game in enumerate(self.game_list):
         #     if i == self.selected:
@@ -104,13 +103,7 @@ class MainView(arcade.View):
         elif self.selected >= len(self.game_list):
             self.selected = 0
 
-        try:
-            self.image = arcade.load_texture(self.game_list[self.selected]['path'] + "/image.jpg")
-        except FileNotFoundError:
-            self.image = arcade.load_texture("assets/missing.jpg")
-            logging.error("missing image.jpg")
-
-
+        # self.image = self.game_list[self.selected]['image']
 
 
 
