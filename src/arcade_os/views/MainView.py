@@ -28,7 +28,6 @@ class MainView(arcade.View):
                 self.joystick_locks[j] = False
                 self.joystick.append(j)
                 j.open()
-                # self.joystick.open()
 
 
         else:
@@ -36,7 +35,6 @@ class MainView(arcade.View):
             self.joystick = None
 
 
-        # self.game_list = GameFinder.find_games()
         self.game_list = app.get_instance().game_list
         self.selected = 0
 

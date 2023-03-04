@@ -4,7 +4,7 @@ import logging
 import arcade
 
 
-
+from arcade_os.app import app
 from arcade_os.config import SPLASH_SCREEN_TIME_DELAY
 
 
@@ -15,7 +15,7 @@ class SplashScreen(arcade.View):
         self.alpha = 0  # initialize alpha to 0 (fully transparent)
 
 
-    
+
     def on_show_view(self):
         arcade.set_background_color(arcade.color.BLACK)
         self.start_time = time.time()
@@ -27,10 +27,12 @@ class SplashScreen(arcade.View):
         if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
             from arcade_os.views.MainView import MainView
 
-            # create and show the next view (in this case, a new instance of MyGame)
-            # next_view = AdventureView()
-            next_view = MainView()
-            # next_view.setup()
+            if app.get_instance().input_layout:
+                next_view = MainView()
+            else:
+                from arcade_os.views.LearnControllers import LearnControllers
+                next_view = LearnControllers( return_view=MainView() )
+
             self.window.show_view(next_view)
 
 

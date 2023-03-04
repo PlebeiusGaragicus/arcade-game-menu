@@ -8,7 +8,7 @@ from arcade_os.config import FULLSCREEN
 
 
 
-class BlankView(arcade.View):
+class LearnControllers(arcade.View):
     def __init__(self, return_view: arcade.View):
         super().__init__()
 
@@ -16,12 +16,13 @@ class BlankView(arcade.View):
 
 
 
-    # def on_draw(self):
-    #     arcade.start_render()
-
     def on_show_view(self):
-        arcade.set_background_color(arcade.color.BLACK)
+        arcade.set_background_color(arcade.color.RICH_BLACK)
 
+
+
+    def on_draw(self):
+        arcade.start_render()
 
 
 
@@ -31,11 +32,9 @@ class BlankView(arcade.View):
         if threading.active_count() == 1:
             logging.info("game has exited - switching back!")
 
-            # maximize doesn't work... but activate does... shrug emoji here :shrug:
-            # arcade.get_window().maximize()
             arcade.get_window().activate()
 
             if FULLSCREEN:
                 arcade.get_window().set_fullscreen(True)
 
-            self.window.show_view( self.return_view)
+            self.window.show_view( self.return_view )

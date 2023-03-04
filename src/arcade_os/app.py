@@ -3,11 +3,12 @@ import sys
 import platform
 import subprocess
 import logging
+import json
 
 import arcade
 
 
-
+from arcade_os.input import InputMapping
 from arcade_os.config import FULLSCREEN, SCREEN_TITLE, SNES9X_EMULATOR_PATH, GameTypes
 
 
@@ -41,6 +42,8 @@ class app(Singleton):
     window: arcade.Window = None
 
     game_list: list = None
+
+    input_layout: InputMapping = None
 
 
 
@@ -98,7 +101,9 @@ class app(Singleton):
             singleton.game_folder = sys.argv[1]
 
         # singleton.game_list = singleton.search_for_games()
-        singleton.search_for_games()
+        singleton.game_list = singleton.search_for_games()
+
+        singleton.input_layout = singleton.load_input_layout()
 
 
         # this can't be here... because this is a blocking function
@@ -157,7 +162,7 @@ class app(Singleton):
 
 
     def search_for_games(self):
-        self.game_list = []
+        ret_list = []
 
         for file_name in os.listdir( self.game_folder ):
             logging.debug(f"{file_name=}")
@@ -179,7 +184,7 @@ class app(Singleton):
                 image = arcade.load_texture("assets/missing.jpg")
                 logging.error("missing image.jpg")
 
-            self.game_list.append({
+            ret_list.append({
                     "name": file_name,
                     # "path": os.path.join(game_folder, file_name),
                     "image": image,
@@ -188,4 +193,17 @@ class app(Singleton):
 
             logging.debug(f"found a game: {file_name} at '{os.path.join(self.game_folder, file_name)}' of type {type}")
 
-        logging.debug(self.game_list)
+        logging.debug(ret_list)
+        return ret_list
+
+
+    def load_input_layout(self):
+        """
+            This will return None on error, or if the file doesn't exist
+        """
+        return None
+
+        input_layout = InputMapping()
+        input_layout.load_from_file("config/input_layout.json")
+        return input_layout
+    

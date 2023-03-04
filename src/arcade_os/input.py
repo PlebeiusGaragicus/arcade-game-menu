@@ -6,26 +6,29 @@ MOVEMENT_SPEED = 5
 DEAD_ZONE = 0.05
 
 
+class InputMapping:
+    """ A mapping of input names to their corresponding input values """
+    def __init__(self):
+        self.mapping = {
+            "up": None,
+            "down": None,
+            "left": None,
+            "right": None,
+            "a": None,
+            "b": None,
+            "x": None,
+            "y": None,
+            "l": None,
+            "r": None,
+            "select": None,
+            "start": None,
 
-InputMapping = {
-    "up": None,
-    "down": None,
-    "left": None,
-    "right": None,
-    "a": None,
-    "b": None,
-    "x": None,
-    "y": None,
-    "l": None,
-    "r": None,
-    "select": None,
-    "start": None,
+            "rewind": None,
+            "quit": None,
+            "save_state": None,
+            "load_state": None,
+        }
 
-    "rewind": None,
-    "quit": None,
-    "save_state": None,
-    "load_state": None,
-}
 
 
 
