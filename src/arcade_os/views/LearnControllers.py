@@ -1,10 +1,8 @@
 import arcade
-import threading
 import logging
+from typing import List
 
-
-
-from arcade_os.config import FULLSCREEN
+from pyglet.input import Joystick
 
 
 
@@ -14,10 +12,30 @@ class LearnControllers(arcade.View):
 
         self.return_view = return_view
 
+        self.joystick: List[Joystick] = None
+
 
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.RICH_BLACK)
+
+        self.setup_controllers()
+
+    
+    def setup_controllers(self):
+        self.joysticks = arcade.get_game_controllers()
+        if joysticks:
+            self.joystick = []
+            for j in joysticks:
+                # logging.debug(f"Joystick name: {self.joystick.device.name}")
+                logging.debug(f"Joystick name: {j.device.name}")
+
+                self.joystick_locks[j] = False
+                self.joystick.append(j)
+                j.open()
+        else:
+            logging.warning("There are no joysticks, plug in a joystick and run again.")
+            self.joystick = None
 
 
 
@@ -27,14 +45,5 @@ class LearnControllers(arcade.View):
 
 
     def on_update(self, delta_time):
-        # check the number of running threads
-        # if there are no running threads, then the game has exited
-        if threading.active_count() == 1:
-            logging.info("game has exited - switching back!")
-
-            arcade.get_window().activate()
-
-            if FULLSCREEN:
-                arcade.get_window().set_fullscreen(True)
-
+        if False:
             self.window.show_view( self.return_view )

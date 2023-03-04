@@ -18,21 +18,20 @@ class MainView(arcade.View):
         super().__init__()
 
         self.joystick_locks = {}
-        joysticks = arcade.get_game_controllers()
-        if joysticks:
-            self.joystick = []
-            for j in joysticks:
-                # logging.debug(f"Joystick name: {self.joystick.device.name}")
-                logging.debug(f"Joystick name: {j.device.name}")
+        self.joysticks = None
+        # joysticks = arcade.get_game_controllers()
+        # if joysticks:
+        #     self.joystick = []
+        #     for j in joysticks:
+        #         # logging.debug(f"Joystick name: {self.joystick.device.name}")
+        #         logging.debug(f"Joystick name: {j.device.name}")
 
-                self.joystick_locks[j] = False
-                self.joystick.append(j)
-                j.open()
-
-
-        else:
-            logging.warning("There are no joysticks, plug in a joystick and run again.")
-            self.joystick = None
+        #         self.joystick_locks[j] = False
+        #         self.joystick.append(j)
+        #         j.open()
+        # else:
+        #     logging.warning("There are no joysticks, plug in a joystick and run again.")
+        #     self.joystick = None
 
 
         self.game_list = app.get_instance().game_list

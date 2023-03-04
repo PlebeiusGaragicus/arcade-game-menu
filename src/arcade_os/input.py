@@ -2,8 +2,13 @@ from enum import Enum, auto
 
 
 
+from pyglet.input import Joystick
+
+
 MOVEMENT_SPEED = 5
 DEAD_ZONE = 0.05
+
+
 
 
 class InputMapping:
@@ -28,6 +33,20 @@ class InputMapping:
             "save_state": None,
             "load_state": None,
         }
+
+
+
+
+class InputSource:
+    # def __init__(self, joystick: Joystick, input_mapping: InputMapping):
+    #     self.joystick = joystick
+    #     self.input_mapping = input_mapping
+    def __init__(self):
+        self.joystick: Joystick = None
+        self.input_mapping: InputMapping = None
+        self.repeat_lock = False
+
+
 
 
 

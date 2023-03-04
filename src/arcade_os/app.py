@@ -4,11 +4,12 @@ import platform
 import subprocess
 import logging
 import json
+from typing import List
 
 import arcade
 
 
-from arcade_os.input import InputMapping
+from arcade_os.input import InputSource
 from arcade_os.config import FULLSCREEN, SCREEN_TITLE, SNES9X_EMULATOR_PATH, GameTypes
 
 
@@ -43,7 +44,7 @@ class app(Singleton):
 
     game_list: list = None
 
-    input_layout: InputMapping = None
+    input_layout: List[InputSource] = None
 
 
 
@@ -103,7 +104,7 @@ class app(Singleton):
         # singleton.game_list = singleton.search_for_games()
         singleton.game_list = singleton.search_for_games()
 
-        singleton.input_layout = singleton.load_input_layout()
+        singleton.input_sources = singleton.load_input_layouts()
 
 
         # this can't be here... because this is a blocking function
@@ -197,13 +198,28 @@ class app(Singleton):
         return ret_list
 
 
-    def load_input_layout(self):
+    def load_input_layouts(self):
         """
             This will return None on error, or if the file doesn't exist
         """
+
+        self.input_sources = []
+
+        inputs = arcade.get_game_controllers()
+
+        for input in inputs:
+            logging.debug(f"{input=}")
+
+        input_layout_file = os.path.join(self.game_folder, "input_layout.json")
+        with open(input_layout_file, 'rb') as f:
+            input_file_contents = json.load(f)
+
+        logging.debug(f"{input_file_contents=}")
+
         return None
 
         input_layout = InputMapping()
         input_layout.load_from_file("config/input_layout.json")
         return input_layout
     
+
