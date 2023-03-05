@@ -19,11 +19,12 @@ class LearnControllers(arcade.View):
     def on_show_view(self):
         arcade.set_background_color(arcade.color.RICH_BLACK)
 
-        self.setup_controllers()
+        # self.setup_controllers()
 
     
     def setup_controllers(self):
-        self.joysticks = arcade.get_game_controllers()
+        joysticks = arcade.get_game_controllers()
+
         if joysticks:
             self.joystick = []
             for j in joysticks:

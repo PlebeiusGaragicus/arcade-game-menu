@@ -11,41 +11,52 @@ DEAD_ZONE = 0.05
 
 
 
-class InputMapping:
-    """ A mapping of input names to their corresponding input values """
-    def __init__(self):
-        self.mapping = {
-            "up": None,
-            "down": None,
-            "left": None,
-            "right": None,
-            "a": None,
-            "b": None,
-            "x": None,
-            "y": None,
-            "l": None,
-            "r": None,
-            "select": None,
-            "start": None,
+# class InputMapping:
+#     """ A mapping of input names to their corresponding input values """
+#     def __init__(self):
+#         self.mapping = {
+#             "up": None,
+#             "down": None,
+#             "left": None,
+#             "right": None,
+#             "a": None,
+#             "b": None,
+#             "x": None,
+#             "y": None,
+#             "l": None,
+#             "r": None,
+#             "select": None,
+#             "start": None,
 
-            "rewind": None,
-            "quit": None,
-            "save_state": None,
-            "load_state": None,
-        }
+#             "rewind": None,
+#             "quit": None,
+#             "save_state": None,
+#             "load_state": None,
+#         }
 
 
 
 
 class InputSource:
-    # def __init__(self, joystick: Joystick, input_mapping: InputMapping):
-    #     self.joystick = joystick
-    #     self.input_mapping = input_mapping
-    def __init__(self):
-        self.joystick: Joystick = None
-        self.input_mapping: InputMapping = None
+    # WARNING: THESE ARE CLASS VARIABLES - NOT INSTANCE VARIABLES!
+    # joystick: Joystick = None
+    # input_mapping: InputMapping = None
+    # repeat_lock: bool = False
+
+    def __init__(self, joystick: Joystick):
+        self.joystick: Joystick = joystick
+        # self.input_mapping: InputMapping = input_mapping
+        # self.input_mapping: dict = input_mapping
+        self.mapping = None
         self.repeat_lock = False
 
+    @property
+    def name(self):
+        return self.joystick.device.name
+    
+    @property
+    def id(self):
+        return self.joystick.device.manufacturer
 
 
 

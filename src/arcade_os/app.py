@@ -3,14 +3,18 @@ import sys
 import platform
 import subprocess
 import logging
-import json
 from typing import List
+
+# TODO: am I doing this wrong?
+import json
+from json import JSONDecodeError
+
 
 import arcade
 
 
 from arcade_os.input import InputSource
-from arcade_os.config import FULLSCREEN, SCREEN_TITLE, SNES9X_EMULATOR_PATH, GameTypes
+from arcade_os.config import FULLSCREEN, SCREEN_TITLE, SNES9X_EMULATOR_PATH, GameTypes, CONTROLLER_JSON_FILENAME
 
 
 
@@ -29,7 +33,7 @@ class Singleton:
         if cls._instance is None:
             cls._instance = cls.__new__(cls)
         return cls._instance
-    
+
 
 
 ######################################################################
@@ -41,10 +45,8 @@ class app(Singleton):
     # storage: SeedStorage = None
     # settings: Settings = None
     window: arcade.Window = None
-
     game_list: list = None
-
-    input_layout: List[InputSource] = None
+    input_sources: List[InputSource] = None
 
 
 
@@ -104,7 +106,7 @@ class app(Singleton):
         # singleton.game_list = singleton.search_for_games()
         singleton.game_list = singleton.search_for_games()
 
-        singleton.input_sources = singleton.load_input_layouts()
+        singleton.input_sources = singleton.setup_controllers()
 
 
         # this can't be here... because this is a blocking function
@@ -198,28 +200,138 @@ class app(Singleton):
         return ret_list
 
 
-    def load_input_layouts(self):
+    # def setup_controllers(self):
+    #     """
+    #         TODO: This doesn't need to be a member function of the Controller class
+    #         This will return None on error, or if the file doesn't exist
+    #     """
+
+    #     input_sources = []
+    #     # REMEMBER: calling this function will nullify any previously saved/setup controllers.  In order for persistance... we can't call this function unless we are wiping away the old setup
+    #     controllers = arcade.get_game_controllers()
+
+    #     if not controllers:
+    #         logging.error("No controllers found")
+    #         return None
+
+    #     for c in controllers:
+    #         logging.debug(f"{c=}")
+
+    #         # new input source with the given joystick object, as well as a blank input mapping
+    #         new_source = InputSource(c, InputMapping())
+
+    #         # we must do this!
+    #         c.open()
+
+    #         input_sources.append( new_source )
+    #         logging.debug(f"{input_sources=}")
+
+    #     try: # to open the input layout file...
+    #         input_layout_file = os.path.join(self.game_folder, CONTROLLER_JSON_FILENAME)
+    #         with open(input_layout_file, 'rb') as f:
+    #             input_file_contents = json.load(f)
+    #             logging.debug(f"{input_file_contents=}")
+    #     except FileNotFoundError:
+    #         logging.error("No input layout file found")
+    #         input_file_contents = None
+
+    #     try:
+    #         for c, i in enumerate( input_file_contents['controllers'] ):
+    #             c[i].mapping = c['mapping']
+
+    #             for key, value in c['mapping'].items():
+    #                 print(f"{key}: {value}")
+    #             print()
+
+    #     except JSONDecodeError:
+    #         logging.error("Error parsing input layout file")
+    #         return None
+
+    #     logging.debug(f"{input_sources=}")
+
+    #     if input_sources == []:
+    #         logging.error("No controllers found")
+    #         return None
+
+    #     return input_sources
+
+
+    def setup_controllers(self):
         """
-            This will return None on error, or if the file doesn't exist
+        TODO: This doesn't need to be a member function of the Controller class
+        This will return None on error, or if the file doesn't exist
         """
 
-        self.input_sources = []
+        input_sources = []
+        # REMEMBER: calling this function will nullify any previously saved/setup controllers.  In order for persistance... we can't call this function unless we are wiping away the old setup
+        controllers = arcade.get_game_controllers()
 
-        inputs = arcade.get_game_controllers()
+        for c in controllers:
+            print("FOUND:")
+            print(c.device.name)
+            c.open()
 
-        for input in inputs:
-            logging.debug(f"{input=}")
+        if not controllers:
+            logging.error("No controllers found")
+            return None
 
-        input_layout_file = os.path.join(self.game_folder, "input_layout.json")
-        with open(input_layout_file, 'rb') as f:
-            input_file_contents = json.load(f)
+        # for c in controllers:
+        #     logging.debug(f"setting up controller: {c.device.name=}")
 
-        logging.debug(f"{input_file_contents=}")
+        #     # new input source with the given joystick object, as well as a blank input mapping
+        #     # new_source = InputSource(c, InputMapping())
+        #     new_source = InputSource(c)
 
-        return None
+        #     # we must do this!
+        #     c.open()
 
-        input_layout = InputMapping()
-        input_layout.load_from_file("config/input_layout.json")
-        return input_layout
-    
+        #     input_sources.append(new_source)
+        #     logging.debug(f"{input_sources=}")
+
+        try: # to open the input layout file...
+            input_layout_file = os.path.join(self.game_folder, CONTROLLER_JSON_FILENAME)
+            with open(input_layout_file, 'r') as f:
+                input_file_contents = json.load(f)
+                logging.debug(f"{input_file_contents=}")
+        except FileNotFoundError:
+            logging.error("No input layout file found")
+            input_file_contents = None
+        
+        if input_file_contents is None:
+            return None
+
+
+        for controller in input_file_contents['controllers']:
+            # Get the name of the controller from the input layout file
+            controller_name = controller['name']
+            # Get the mapping dictionary for the controller from the input layout file
+            mapping = controller['mapping']
+
+            # Find the input source that matches the controller by name
+            for c in controllers:
+                print("EQUAL?")
+                print( f"'{c.device.name}' '{controller_name}'")
+                if c.device.name == controller_name:
+                    # Set the input mapping for the input source
+                    # input_source.mapping = mapping
+                    logging.debug(f"setting up controller: {c.device.name=}")
+
+                    # new input source with the given joystick object, as well as a blank input mapping
+                    # new_source = InputSource(c, InputMapping())
+                    new_source = InputSource(c)
+                    new_source.mapping = mapping
+
+                    # we must do this!
+                    # c.open()
+
+                    input_sources.append(new_source)
+
+        logging.debug(f"{input_sources=}")
+
+        if input_sources == []:
+            logging.error("No controllers found")
+            return None
+
+        return input_sources
+
 

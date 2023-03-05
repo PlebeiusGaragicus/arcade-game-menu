@@ -25,9 +25,10 @@ class SplashScreen(arcade.View):
 
     def on_update(self, delta_time):
         if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
+
             from arcade_os.views.MainView import MainView
 
-            if app.get_instance().input_layout:
+            if app.get_instance().input_sources:
                 next_view = MainView()
             else:
                 from arcade_os.views.LearnControllers import LearnControllers

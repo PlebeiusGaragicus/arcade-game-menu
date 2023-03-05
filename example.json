@@ -1,0 +1,46 @@
+{
+  "controllers": [
+    {
+      "name": "Xbox One Controller",
+      "mapping": {
+        "0": "A",
+        "1": "B",
+        "2": "X",
+        "3": "Y",
+        "4": "LB",
+        "5": "RB",
+        "6": "LT",
+        "7": "RT",
+        "8": "Back",
+        "9": "Start",
+        "10": "Left Stick",
+        "11": "Right Stick",
+        "12": "Up",
+        "13": "Down",
+        "14": "Left",
+        "15": "Right"
+      }
+    },
+    {
+      "name": "PS4 Controller",
+      "mapping": {
+        "0": "Cross",
+        "1": "Circle",
+        "2": "Square",
+        "3": "Triangle",
+        "4": "L1",
+        "5": "R1",
+        "6": "L2",
+        "7": "R2",
+        "8": "Share",
+        "9": "Options",
+        "10": "L3",
+        "11": "R3",
+        "12": "Up",
+        "13": "Down",
+        "14": "Left",
+        "15": "Right"
+      }
+    }
+  ]
+}

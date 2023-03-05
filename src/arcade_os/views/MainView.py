@@ -1,5 +1,6 @@
 import logging
 import threading
+from typing import List
 
 import arcade
 
@@ -7,7 +8,7 @@ import arcade
 
 from arcade_os.app import app
 from arcade_os.config import SHOW_MOUSE
-from arcade_os.input import SNESButton, N64Button
+from arcade_os.input import SNESButton, N64Button, InputSource
 from arcade_os.views.BlankView import BlankView
 from arcade_os.views.SettingsView import SettingsView
 
@@ -37,6 +38,8 @@ class MainView(arcade.View):
         self.game_list = app.get_instance().game_list
         self.selected = 0
 
+        self.inputs: List[InputSource] = app.get_instance().input_sources
+
         self.mx = 0
         self.my = 0
         self.mouse_cursor = arcade.load_texture("./assets/fire.png")
@@ -48,10 +51,10 @@ class MainView(arcade.View):
 
         self.move_selection(0) # we need to call this to load the image
 
-        if self.joystick:
-            for j in self.joystick:
-                j.push_handlers(self)
-                # self.joystick.push_handlers(self)
+        if self.inputs:
+            for i in self.inputs:
+                print("PUSH HANDLERS!!!!")
+                i.joystick.push_handlers(self)
 
 
 
@@ -59,10 +62,10 @@ class MainView(arcade.View):
         arcade.get_window().set_fullscreen(False)
         arcade.get_window().minimize()
 
-        if self.joystick:
-            for j in self.joystick:
-                j.pop_handlers()
-                # self.joystick.pop_handlers()
+        if self.inputs:
+            for i in self.inputs:
+                i.joystick.pop_handlers()
+                # i.pop_handlers()
 
         # create a thread that checks if the launched game is still running
         t = threading.Thread(target=lambda: app.get_instance().launch_game( self.selected ))
@@ -175,16 +178,140 @@ class MainView(arcade.View):
 
 
 
-    def on_joybutton_press(self, _joystick, button):
-        print(_joystick.device.name)
-        print(_joystick.device.manufacturer)
 
-        if _joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
-            self.on_snes_button_press(button)
-        elif _joystick.device.name == "Pro Controller":
-            self.on_pro_controller_button_press(button)
-        elif "DragonRise Inc." in _joystick.device.name:
-            self.on_dragonrise_button_press(button)
+
+
+
+
+    # def on_joybutton_press(self, _joystick, button):
+    #     logging.debug("Joystick {} button {} pressed".format(_joystick.device.name, button))
+
+    #     for i in self.inputs:
+    #         if i.joystick == _joystick:
+    #             mapping = i.mapping
+
+    #     # Get the mapping dictionary for the joystick from your data structure
+    #     # mapping = mapping_dict.get(_joystick.device.name)
+
+    #     # Check if the mapping exists for the joystick
+    #     if mapping is None:
+    #         logging.warning("No mapping found for joystick: {}".format(_joystick.device.name))
+    #         return
+
+    #     # Map the button number to a key name using the mapping dictionary
+    #     key = mapping.get(str(button))
+    #     logging.debug("Button {} mapped to key: {}".format(button, key))
+        
+    #     # Check if the key exists in the mapping dictionary
+    #     if key is None:
+    #         logging.warning("No key found for button {} in mapping for joystick: {}".format(button, _joystick.device.name))
+    #         return
+
+
+
+    #     # Handle the button press based on the mapped key
+    #     if key == "A":
+    #         logging.debug("A")
+    #         self.launch_game()
+
+    #     elif key == "Start":
+    #         logging.debug("START")
+    #         self.launch_game()
+
+    #     elif key == "Up":
+    #         logging.debug("UP")
+    #         self.move_selection(1)
+
+    #     elif key == "Down":
+    #         logging.debug("DOWN")
+    #         self.move_selection(-1)
+
+    #     # Handle other mapped keys here
+    #     else:
+    #         pass
+
+
+    def on_joybutton_press(self, _joystick, button):
+        logging.debug("Joystick {} button {} pressed".format(_joystick.device.name, button))
+
+        mapping = None
+        for input_source in self.inputs:
+            if input_source.joystick == _joystick:
+                mapping = input_source.mapping
+                break
+
+        if mapping is None:
+            logging.warning("No mapping found for joystick: {}".format(_joystick.device.name))
+            return
+
+        # key = mapping.get(str(button))
+        key = mapping[ (str(button)) ]
+        logging.debug("Button {} mapped to key: {}".format(button, key))
+
+        if key == "A":
+            logging.debug("A")
+            self.launch_game()
+
+        elif key == "Start":
+            logging.debug("START")
+            self.launch_game()
+
+        elif key == "Up":
+            logging.debug("UP")
+            self.move_selection(1)
+
+        elif key == "Down":
+            logging.debug("DOWN")
+            self.move_selection(-1)
+
+        else:
+            pass
+
+
+
+
+
+
+
+    # def on_joybutton_press(self, _joystick, button):
+    #     # print(_joystick.device.name)
+    #     # print(_joystick.device.manufacturer)
+    #     # logging.debug("Button {} down".format(button))
+
+    #     if button == SNESButton.A:
+    #         logging.debug("A")
+    #         self.launch_game()
+
+    #     if button == SNESButton.START:
+    #         logging.debug("START")
+    #         self.launch_game()
+
+    #     if button == SNESButton.UP:
+    #         logging.debug("UP")
+    #         self.move_selection(1)
+
+    #     if button == SNESButton.DOWN:
+    #         logging.debug("DOWN")
+    #         self.move_selection(-1)
+
+    #     if button == SNESButton.LEFT:
+    #         self.move_selection(1)
+    #         logging.debug("LEFT")
+
+    #     if button == SNESButton.RIGHT:
+    #         self.move_selection(-1)
+    #         logging.debug("RIGHT")
+
+
+
+
+
+        # if _joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
+        #     self.on_snes_button_press(button)
+        # elif _joystick.device.name == "Pro Controller":
+        #     self.on_pro_controller_button_press(button)
+        # elif "DragonRise Inc." in _joystick.device.name:
+        #     self.on_dragonrise_button_press(button)
 
         # if self.joystick.device.name == "Joystick name: USB,2-axis 8-button gamepad":
         #     self.on_snes_button_press(button)
