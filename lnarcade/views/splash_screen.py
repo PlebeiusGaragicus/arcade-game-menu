@@ -23,8 +23,8 @@ class SplashScreen(arcade.View):
         self.start_time = time.time()
         logger.debug(f"load_time: {self.start_time}")
 
-        # sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
-        sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
+        sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
+        # sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
         theme_sound = arcade.sound.load_sound( sound_path )
         self.theme_len = arcade.sound.Sound.get_length( theme_sound )
 
