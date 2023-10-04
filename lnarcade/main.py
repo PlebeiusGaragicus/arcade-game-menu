@@ -4,14 +4,11 @@ import dotenv
 
 from lnarcade.version import VERSION
 from lnarcade.logger import setup_logging
+from lnarcade.config import Config
+from lnarcade.control import control_loop
+from lnarcade.models.menusystem import MenuSystem
 
-
-def main():
-    dotenv.load_dotenv()
-
-    setup_logging()
-    logger = logging.getLogger("nospy")
-
+def print_preamble():
     print(f"\n====================\n")
     print(f"Version {VERSION}")
     print(f"\n====================\n")
@@ -19,4 +16,29 @@ def main():
         print(f"DEBUG MODE IS ENABLED!")
         print(f"Password: {os.getenv('PASSWORD')}")
 
-    logger.info("Hello, world!")
+
+def main():
+    # load environment variables
+    if dotenv.load_dotenv() == False:
+        # TODO: should I make this a critical error?
+        print("WARNING!!!  No .env file found!!!")
+        exit(1)
+
+    # setup logging
+    setup_logging()
+    logger = logging.getLogger("lnarcade")
+    logging.getLogger("arcade").setLevel(logging.WARNING)
+    logging.getLogger("PIL").setLevel(logging.INFO)
+
+    print_preamble()
+
+    # load config file
+    relays = Config.get_instance().relays
+    if relays == {}:
+        logger.info("No relays saved.")
+    print(relays)
+
+
+    control_loop()
+
+    MenuSystem.get_instance().start()

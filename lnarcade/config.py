@@ -5,41 +5,47 @@ from pathlib import Path
 from dataclasses import dataclass, field
 
 import logging
-logger = logging.getLogger("nospy")
+logger = logging.getLogger("lnarcade")
+
+
+from lnarcade.models.singleton import SingletonDataclass
 
 
 
-DATA_DIR = str(Path.home() / ".config/lnarcade")
-CONFIG_FILENAME = f"{os.getenv('NOSPY_USER', 'default')}.json"
+DATA_DIR = str(Path.home() / ".config")
+CONFIG_FILENAME = "lnarcade.json"
 
 
-from lnarcade.models import Singleton
+# FULLSCREEN = True
+FULLSCREEN = False
+SHOW_MOUSE = False
+SCREEN_TITLE = "Starting Template"
+SPLASH_SCREEN_TIME_DELAY = 0.5
+SNES9X_EMULATOR_PATH = "flatpak run com.snes9x.Snes9x"
+
+
 
 
 
 @dataclass
-class Config(Singleton):
+class Config(SingletonDataclass):
     state: dict = field(default_factory=dict)
 
     def __post_init__(self):
         os.makedirs(DATA_DIR, exist_ok=True)
-
-        # Parse config
         self.config_path = os.path.join(DATA_DIR, CONFIG_FILENAME)
-        # NOTE: There is no reason to save an empty config file... also, we can't do this inside __init__ because self.state isn't set yet
-        # if not os.path.exists(config_path):
-        #     logging.warn(f"Config file not found. Creating a new one: {config_path}")
-        #     self.save_config(config_path)
-        # else:
-        #     self.load_config(config_path)
-
         self.load_config()
 
-    
+
+    @property
+    def relays(self) -> dict:
+        return self.state.get("relays", {})
+
     def add_relay(self, addr, policy) -> None:
         if "relays" not in self.state:
             self.state["relays"] = {}
         self.state["relays"][addr] = policy
+
 
     def remove_relay(self, addr) -> bool:
         if "relays" in self.state and addr in self.state["relays"]:
@@ -47,11 +53,10 @@ class Config(Singleton):
             return True
         else:
             return False
-        
+
     def clear_relays(self) -> None:
         self.state["relays"] = {}
 
-    
 
     def save_config(self):
         """Save the config file."""
