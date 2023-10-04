@@ -1,0 +1,1 @@
+from lnarcade.main import main
