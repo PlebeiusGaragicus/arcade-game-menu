@@ -11,7 +11,7 @@ logger = logging.getLogger("lnarcade")
 from lnarcade.models.singleton import SingletonDataclass
 
 
-
+MY_DIR = os.path.dirname(os.path.realpath(__file__))    # Path: lnarcade
 DATA_DIR = str(Path.home() / ".config")
 CONFIG_FILENAME = "lnarcade.json"
 

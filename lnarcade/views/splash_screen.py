@@ -1,16 +1,20 @@
+import os
 import time
 import logging
 logger = logging.getLogger("lnarcade")
 
 import arcade
 
-SPLASH_SCREEN_TIME_DELAY = 5
+from lnarcade.config import MY_DIR
+
+SPLASH_SCREEN_TIME_DELAY = 6.5
 
 class SplashScreen(arcade.View):
     def __init__(self):
         super().__init__()
         self.alpha = 0  # initialize alpha to 0 (fully transparent)
-
+        self.player = None
+        self.theme_len = 0
 
     
     def on_show_view(self):
@@ -19,12 +23,21 @@ class SplashScreen(arcade.View):
         self.start_time = time.time()
         logger.debug(f"load_time: {self.start_time}")
 
+        # sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
+        sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
+        theme_sound = arcade.sound.load_sound( sound_path )
+        self.theme_len = arcade.sound.Sound.get_length( theme_sound )
+
+        self.player = arcade.sound.play_sound( theme_sound )
+
 
 
     def on_update(self, delta_time):
         # logging.debug(f"delta_time: {delta_time}")
 
-        if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
+        # if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
+        if time.time() > self.start_time + self.theme_len: # wait for theme to finish
+            arcade.sound.stop_sound( self.player )
             self.show_next_view()
 
 
@@ -44,10 +57,6 @@ class SplashScreen(arcade.View):
 
 
     def show_next_view(self):
-        # from src.views.adventure_view import AdventureView
         from lnarcade.views.game_select import GameSelectView
-        # create and show the next view (in this case, a new instance of MyGame)
-        # next_view = AdventureView()
         next_view = GameSelectView()
-        # next_view.setup()
         self.window.show_view(next_view)

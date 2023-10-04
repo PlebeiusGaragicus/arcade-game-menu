@@ -5,7 +5,7 @@ import dotenv
 
 # from lnarcade.version import VERSION
 from lnarcade.logger import setup_logging
-from lnarcade.config import Config
+from lnarcade.config import Config, MY_DIR
 from lnarcade.models.menusystem import MenuSystem
 
 def print_preamble():
@@ -17,7 +17,8 @@ def print_preamble():
     print(f"\n====================\n")
     if os.getenv("DEBUG"):
         print(f"DEBUG MODE IS ENABLED!")
-        print(f"Password: {os.getenv('PASSWORD')}")
+        print(f">> {MY_DIR}")
+        # print(f"Password: {os.getenv('PASSWORD')}")
 
 
 def main():
