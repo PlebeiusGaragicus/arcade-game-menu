@@ -14,7 +14,7 @@ from lnarcade.models.singleton import SingletonDataclass
 MY_DIR = os.path.dirname(os.path.realpath(__file__))    # Path: lnarcade
 DATA_DIR = str(Path.home() / ".config")
 CONFIG_FILENAME = "lnarcade.json"
-
+APP_FOLDER = "arcade-apps" # located in the home folder
 
 # FULLSCREEN = True
 FULLSCREEN = False

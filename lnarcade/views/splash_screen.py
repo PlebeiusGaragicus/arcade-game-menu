@@ -7,13 +7,16 @@ import arcade
 
 from lnarcade.config import MY_DIR
 
+# for type hinting
+from pyglet.media import Player
+
 SPLASH_SCREEN_TIME_DELAY = 6.5
 
 class SplashScreen(arcade.View):
     def __init__(self):
         super().__init__()
         self.alpha = 0  # initialize alpha to 0 (fully transparent)
-        self.player = None
+        self.player: Player = None
         self.theme_len = 0
 
     
@@ -23,8 +26,11 @@ class SplashScreen(arcade.View):
         self.start_time = time.time()
         logger.debug(f"load_time: {self.start_time}")
 
-        sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
-        # sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
+        if os.getenv("DEBUG", False):
+            sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
+        else:
+            sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
+
         theme_sound = arcade.sound.load_sound( sound_path )
         self.theme_len = arcade.sound.Sound.get_length( theme_sound )
 
@@ -38,8 +44,11 @@ class SplashScreen(arcade.View):
         # if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
         if time.time() > self.start_time + self.theme_len: # wait for theme to finish
             arcade.sound.stop_sound( self.player )
-            self.show_next_view()
+            # self.show_next_view()
 
+            from lnarcade.views.game_select import GameSelectView
+            next_view = GameSelectView()
+            self.window.show_view(next_view)
 
 
     def on_draw(self):
@@ -53,10 +62,3 @@ class SplashScreen(arcade.View):
                          color_with_alpha,
                          font_size=30, anchor_x="center")
         self.alpha = min(self.alpha + 5, 255)  # increase alpha up to 255
-
-
-
-    def show_next_view(self):
-        from lnarcade.views.game_select import GameSelectView
-        next_view = GameSelectView()
-        self.window.show_view(next_view)
