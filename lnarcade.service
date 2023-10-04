@@ -1,0 +1,13 @@
+[Unit]
+Description=LNArcade Launcher Service
+After=network.target
+
+[Service]
+ExecStart=lnarcade
+Restart=always
+User=satoshi
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/satoshi/.Xauthority
+
+[Install]
+WantedBy=multi-user.target
