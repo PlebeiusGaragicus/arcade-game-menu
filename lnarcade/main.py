@@ -1,11 +1,11 @@
 import os
+import threading
 import logging
 import dotenv
 
 from lnarcade.version import VERSION
 from lnarcade.logger import setup_logging
 from lnarcade.config import Config
-from lnarcade.control import control_loop
 from lnarcade.models.menusystem import MenuSystem
 
 def print_preamble():
@@ -37,8 +37,5 @@ def main():
     if relays == {}:
         logger.info("No relays saved.")
     print(relays)
-
-
-    control_loop()
 
     MenuSystem.get_instance().start()
