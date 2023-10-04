@@ -1,5 +1,6 @@
 import os
 import time
+import subprocess
 import logging
 logger = logging.getLogger("lnarcade")
 
@@ -61,3 +62,7 @@ class GameSelectView(arcade.View):
             self.selected_index = (self.selected_index - 1) % len(self.manifests)
         elif symbol == arcade.key.DOWN:
             self.selected_index = (self.selected_index + 1) % len(self.manifests)
+        elif symbol == arcade.key.ENTER:
+            selected_app = list(self.manifests.keys())[self.selected_index]
+            app_path = os.path.expanduser(f"~/{APP_FOLDER}/{selected_app}")
+            subprocess.run(["python", f"{app_path}/main.py"])
