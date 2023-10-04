@@ -3,14 +3,17 @@ import threading
 import logging
 import dotenv
 
-from lnarcade.version import VERSION
+# from lnarcade.version import VERSION
 from lnarcade.logger import setup_logging
 from lnarcade.config import Config
 from lnarcade.models.menusystem import MenuSystem
 
 def print_preamble():
+    import pkg_resources
+    version = pkg_resources.get_distribution("lightning_arcade_system").version
+
     print(f"\n====================\n")
-    print(f"Version {VERSION}")
+    print(f"Version {version}")
     print(f"\n====================\n")
     if os.getenv("DEBUG"):
         print(f"DEBUG MODE IS ENABLED!")
