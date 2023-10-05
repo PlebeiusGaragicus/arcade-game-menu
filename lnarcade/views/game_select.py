@@ -6,7 +6,7 @@ logger = logging.getLogger("lnarcade")
 
 import arcade
 
-from lnarcade.config import APP_FOLDER
+from lnarcade.config import APP_FOLDER, MY_DIR
 from lnarcade.utilities.find_games import get_app_manifests
 
 
@@ -51,7 +51,12 @@ class GameSelectView(arcade.View):
             arcade.draw_text(text, x, y - i * 20, color, font_size=16, anchor_x="left")
 
         # Load and draw the image
-        image = arcade.load_texture(image_path)
+        try:
+            image = arcade.load_texture(image_path)
+        except FileNotFoundError:
+            image_path = os.path.expanduser(f"{MY_DIR}/resources/img/missing.jpg")
+            image = arcade.load_texture(image_path)
+
         image_width = image.width * 0.5
         image_height = image.height * 0.5
         arcade.draw_texture_rectangle(width * 0.8, height * 0.5, image_width, image_height, image, 0)
@@ -65,4 +70,16 @@ class GameSelectView(arcade.View):
         elif symbol == arcade.key.ENTER:
             selected_app = list(self.manifests.keys())[self.selected_index]
             app_path = os.path.expanduser(f"~/{APP_FOLDER}/{selected_app}")
-            subprocess.run(["python", f"{app_path}/main.py"])
+            logger.debug("Launching python module: %s", selected_app)
+
+
+            # arcade.close_window()
+            # arcade.Window.set_fullscreen(False)
+            self.window.set_fullscreen(False)
+
+            subprocess.run(["python3", "-m", selected_app], cwd=os.path.expanduser(f"~/{APP_FOLDER}"))
+
+            self.window.set_fullscreen(True)
+
+            # arcade.open_window("yay", 300, 300, fullscreen=False)
+            # arcade.run()

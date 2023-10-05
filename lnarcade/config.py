@@ -16,8 +16,8 @@ DATA_DIR = str(Path.home() / ".config")
 CONFIG_FILENAME = "lnarcade.json"
 APP_FOLDER = "arcade-apps" # located in the home folder
 
-# FULLSCREEN = True
-FULLSCREEN = False
+FULLSCREEN = True
+# FULLSCREEN = False
 SHOW_MOUSE = False
 SCREEN_TITLE = "Starting Template"
 SPLASH_SCREEN_TIME_DELAY = 0.5
