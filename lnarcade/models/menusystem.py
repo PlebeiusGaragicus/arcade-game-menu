@@ -40,13 +40,13 @@ class MenuSystem(Singleton):
 
         width, height = arcade.get_display_size()
 
-        width //= 2
-        height //= 2
+        # width //= 2
+        # height //= 2
 
         if FULLSCREEN:
             controller.window = arcade.Window(title=SCREEN_TITLE, fullscreen=True)
         else:
-            controller.window = arcade.Window(width=width, height=height, title=SCREEN_TITLE)
+            controller.window = arcade.Window(width=width, height=height, title=SCREEN_TITLE, fullscreen=False, style="borderless")
 
         # controller.storage = SeedStorage()
         # controller.settings = Settings.get_instance()

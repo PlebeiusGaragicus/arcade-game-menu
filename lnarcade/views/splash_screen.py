@@ -19,7 +19,7 @@ class SplashScreen(arcade.View):
         self.player: Player = None
         self.theme_len = 0
 
-    
+
     def on_show_view(self):
         logger.info("Starting SplashScreen")
         arcade.set_background_color(arcade.color.BLACK)
