@@ -1,32 +1,33 @@
 import os
-import time
 from dataclasses import dataclass
 import subprocess
 import logging
-logger = logging.getLogger("lnarcade")
+logger = logging.getLogger()
 
 import arcade
 
-from lnarcade.config import APP_FOLDER, MY_DIR, FULLSCREEN, FREE_PLAY
+from lnarcade.config import APP_FOLDER, MY_DIR, FREE_PLAY
+from lnarcade.app import App
 from lnarcade.utilities.find_games import get_app_manifests
 from lnarcade.views.error import ErrorModalView
 
-@dataclass
-class MenuItem():
-    def __init__(self, module_name: str, game_name: str, manifest_dict: dict, image_path: str):
-        self.module_name = module_name
-        self.game_name = game_name
-        self.manifest_dict: dict = manifest_dict
 
+
+@dataclass
+class MenuItem:
+    module_name: str
+    game_name: str
+    manifest_dict: dict
+    image_path: str
+    image: arcade.Texture = None
+
+    def __post_init__(self):  # This method is automatically called after `__init__`
         try:
-            self.image = arcade.load_texture(image_path)
+            self.image = arcade.load_texture(self.image_path)
         except FileNotFoundError:
             image_path = os.path.expanduser(f"{MY_DIR}/resources/img/missing.jpg")
             self.image = arcade.load_texture(image_path)
-        
-    def app_module_path():
-        # return os.path.expanduser(f"~/{APP_FOLDER}/{selected_app}")
-        pass
+
 
 
 
@@ -39,7 +40,7 @@ class GameSelectView(arcade.View):
         self.menu_items: list = []
 
         manifests = get_app_manifests()
-        print( manifests )
+        logger.debug("manifests: %s", manifests)
 
         for (app_folder_name, manifest_dict) in manifests.items():
             image_path = os.path.expanduser(f"~/{APP_FOLDER}/{app_folder_name}/image.png")
@@ -52,12 +53,15 @@ class GameSelectView(arcade.View):
                 logger.error(f"KeyError in {app_folder_name} manifest.json")
                 continue
 
-        print( self.menu_items )
+        logger.debug("self.menu_items: %s", self.menu_items)
 
-    
+
     def on_show_view(self):
-        logger.info("Starting GameSelectView")
         arcade.set_background_color(arcade.color.BLACK)
+
+        # TODO - clean this up...
+        if self.menu_items == []:
+            App.get_instance().window.show_view( ErrorModalView("No manifests found!", None) )
 
         # self.selected_index = 0
 
@@ -67,6 +71,7 @@ class GameSelectView(arcade.View):
 
 
     def on_draw(self):
+
         width, height = self.window.get_size()
         arcade.start_render()
 
@@ -115,17 +120,18 @@ class GameSelectView(arcade.View):
                 return
 
 
-            # arcade.set_background_color(arcade.color.WHITE)
+            # doesn't do anything...?  Is it because I'm no in a draw loop or something????
+            # arcade.set_background_color(arcade.color.BLACK)
+            # arcade.start_render()
             if FULLSCREEN:
                 self.window.set_fullscreen(False)
             # self.window.set_visible(False) # doesn't do anything...?
             # self.window.minimize()
 
-            # This is a blocking call - we will wait for the game to run and exit
             args = ["python3", "-m", selected_app]
             cwd = os.path.expanduser(f"~/{APP_FOLDER}")
             logger.debug(f"subprocess.run({args=}, {cwd=})")
-            ret_code = subprocess.run(args, cwd=cwd).returncode
+            ret_code = subprocess.run(args, cwd=cwd).returncode # This is a blocking call - wait for game to run and exit
 
             if ret_code != 0:
                 logger.error(f"app '{selected_app}' returned non-zero! {ret_code=}")

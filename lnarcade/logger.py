@@ -27,12 +27,9 @@ class ColoredFormatter(logging.Formatter):
 def setup_logging():
     debug = os.getenv("DEBUG", False)
     if debug:
-        # log_format = "%(asctime)s %(levelname)s | (%(filename)s @ %(lineno)d) >> %(message)s"
-        # log_format = "%(levelname)s | %(asctime)s | (%(filename)s @ %(lineno)d) | %(message)s"
-        log_format = "%(name)s %(levelname)s | (%(filename)s @ %(lineno)d) | %(message)s"
+        # log_format = "%(name)s %(levelname)s | (%(filename)s @ %(lineno)d) | %(message)s"
+        log_format = "%(levelname)s | (%(filename)s @ %(lineno)d) | %(message)s"
     else:
-        # log_format = "%(asctime)s %(levelname)s | %(message)s"
-        # log_format = "%(levelname)s | %(asctime)s | %(message)s"
         log_format = "%(levelname)s | %(message)s"
 
     formatter = ColoredFormatter(log_format, datefmt="%Y/%m/%d %H:%M.%S")
@@ -41,3 +38,6 @@ def setup_logging():
     console_handler.setFormatter(formatter)
 
     logging.basicConfig(level=logging.DEBUG if debug != False else logging.INFO, handlers=[console_handler])
+
+    logging.getLogger("arcade").setLevel(logging.WARNING)
+    logging.getLogger("PIL").setLevel(logging.INFO)

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 # from lnarcade.version import VERSION # we don't do it this way as it causes import errors during `pip3 install -e .`
-VERSION = '0.0.4'
+VERSION = '0.0.1'
 
 setup(
     name='lightning arcade system',
@@ -23,7 +23,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'lnarcade=lnarcade:main',
+            'lnarcade=lnarcade.app:main',
         ],
     },
 )

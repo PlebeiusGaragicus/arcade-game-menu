@@ -1,7 +1,8 @@
 import os
 import time
 import logging
-logger = logging.getLogger("lnarcade")
+# logger = logging.getLogger("lnarcade")
+logger = logging.getLogger()
 
 import arcade
 
@@ -10,7 +11,6 @@ from lnarcade.config import MY_DIR
 # for type hinting
 from pyglet.media import Player
 
-SPLASH_SCREEN_TIME_DELAY = 6.5
 
 class SplashScreen(arcade.View):
     def __init__(self):
@@ -21,10 +21,8 @@ class SplashScreen(arcade.View):
 
 
     def on_show_view(self):
-        logger.info("Starting SplashScreen")
         arcade.set_background_color(arcade.color.BLACK)
         self.start_time = time.time()
-        logger.debug(f"load_time: {self.start_time}")
 
         if os.getenv("DEBUG", False):
             sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
@@ -39,9 +37,6 @@ class SplashScreen(arcade.View):
 
 
     def on_update(self, delta_time):
-        # logging.debug(f"delta_time: {delta_time}")
-
-        # if time.time() > self.start_time + SPLASH_SCREEN_TIME_DELAY:
         if time.time() > self.start_time + self.theme_len: # wait for theme to finish
             arcade.sound.stop_sound( self.player )
             # self.show_next_view()

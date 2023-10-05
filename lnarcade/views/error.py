@@ -4,7 +4,7 @@ import time
 
 import arcade
 
-from lnarcade.models.menusystem import MenuSystem
+from lnarcade.app import App
 
 def show_error(error_msg: str):
     window = arcade.get_window()
@@ -51,7 +51,7 @@ class ToastErrorView(arcade.View):
 
     def on_update(self, delta_time):
         if time.time() > self.start_time + self.time_limit:
-            MenuSystem.get_instance().window.show_view( self.return_view )
+            App.get_instance().window.show_view( self.return_view )
 
 
     def on_draw(self):
@@ -90,4 +90,7 @@ class ErrorModalView(arcade.View):
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.ENTER:
-            MenuSystem.get_instance().window.show_view( self.return_view )
+            if self.return_view is None:
+                arcade.exit()
+            else:
+                App.get_instance().window.show_view( self.return_view )

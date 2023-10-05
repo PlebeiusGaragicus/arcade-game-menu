@@ -5,31 +5,26 @@ from pathlib import Path
 from dataclasses import dataclass, field
 
 import logging
-logger = logging.getLogger("lnarcade")
+logger = logging.getLogger()
 
 
-from lnarcade.models.singleton import SingletonDataclass
 
-
-MY_DIR = os.path.dirname(os.path.realpath(__file__))    # Path: lnarcade
+MY_DIR = os.path.dirname(os.path.realpath(__file__))
 DATA_DIR = str(Path.home() / ".config")
 CONFIG_FILENAME = "lnarcade.json"
-APP_FOLDER = "arcade-apps" # located in the home folder
 
-# FULLSCREEN = True
-FULLSCREEN = False
+# located in the home folder
+APP_FOLDER = "arcade-apps"
+
 FREE_PLAY = True
 SHOW_MOUSE = False
-SCREEN_TITLE = "Starting Template"
+SCREEN_TITLE = "Lightning Arcade"
 SPLASH_SCREEN_TIME_DELAY = 0.5
-SNES9X_EMULATOR_PATH = "flatpak run com.snes9x.Snes9x"
 
-
-
-
+# SNES9X_EMULATOR_PATH = "flatpak run com.snes9x.Snes9x"
 
 @dataclass
-class Config(SingletonDataclass):
+class Config():
     state: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -38,6 +33,10 @@ class Config(SingletonDataclass):
         self.load_config()
 
 
+
+
+
+    #################################################
     @property
     def relays(self) -> dict:
         return self.state.get("relays", {})
@@ -46,7 +45,6 @@ class Config(SingletonDataclass):
         if "relays" not in self.state:
             self.state["relays"] = {}
         self.state["relays"][addr] = policy
-
 
     def remove_relay(self, addr) -> bool:
         if "relays" in self.state and addr in self.state["relays"]:
@@ -57,6 +55,20 @@ class Config(SingletonDataclass):
 
     def clear_relays(self) -> None:
         self.state["relays"] = {}
+    ###################################################
+
+
+
+    def get(self, key, default=None):
+        return self.state.get(key, default)
+
+    def set(self, key, value):
+        self.state[key] = value
+
+    def set_empty_state(self):
+        self.state = {}
+        self.state['SNES_EMULATOR_CMD'] = "flatpak run com.snes9x.Snes9x"
+        self.save_config()
 
 
     def save_config(self):
@@ -68,8 +80,7 @@ class Config(SingletonDataclass):
         with open(self.config_path, "w") as f:
             json.dump(self.state, f, indent=4)
 
-        logger.debug(f"Saving the current config to file: {self.config_path}")
-        # logger.debug(f"Config: {self.state}")
+        logger.debug(f"Saving config to file: {self.config_path}")
 
 
     def load_config(self):
@@ -77,20 +88,22 @@ class Config(SingletonDataclass):
         logger.debug(f"Loading config file: {self.config_path}")
 
         if not os.path.exists(self.config_path):
-            # logger.warn(f"Config file not found.")
-            self.state = {} # Set the state to an empty dictionary
+            logger.warning(f"Config file not found.")
+            # self.state = {} # Set the state to an empty dictionary
+            self.set_empty_state()
             return
 
-        # TODO: I'm not sure this is even needed...
+        # empty config file (will cause a JSONDecodeError)
         if os.path.getsize(self.config_path) == 0:
-            # logger.warn(f"Config file is empty.")
-            self.state = {}  # Set the state to an empty dictionary
+            logger.warning(f"Config file is empty.")
+            # self.state = {}  # Set the state to an empty dictionary
+            self.set_empty_state()
             return
 
         with open(self.config_path, "r") as f:
             try:
                 self.state = json.load(f)
-                # logger.debug(f"Config: {self.state}")
             except json.JSONDecodeError as e:
-                logger.critical(f"Can't parse config file. Ensure the file is properly formatted JSON. {self.config_path}: {str(e)}")
-                sys.exit(1)
+                # TODO: I could just proceed with an empty config state after I show an error message (but how do I show an error message before anything has been initialized?)
+                logger.error(f"Can't parse config file. Ensure the file is properly formatted JSON. {self.config_path}: {str(e)}")
+                exit(1)
