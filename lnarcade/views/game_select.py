@@ -1,4 +1,5 @@
 import os
+import time
 from dataclasses import dataclass
 import subprocess
 import logging
@@ -6,7 +7,7 @@ logger = logging.getLogger()
 
 import arcade
 
-from lnarcade.config import APP_FOLDER, MY_DIR, FREE_PLAY
+from lnarcade.config import APP_FOLDER, MY_DIR, FREE_PLAY, AFK_SCROLL_TIME
 from lnarcade.app import App
 from lnarcade.utilities.find_games import get_app_manifests
 from lnarcade.views.error import ErrorModalView
@@ -36,8 +37,9 @@ class GameSelectView(arcade.View):
         super().__init__()
         self.alpha = 0  # initialize alpha to 0 (fully transparent)
         self.selected_index = 0
-
+        self.last_input_time = time.time()
         self.menu_items: list = []
+        self.credits: int = 0
 
         manifests = get_app_manifests()
         logger.debug("manifests: %s", manifests)
@@ -67,11 +69,13 @@ class GameSelectView(arcade.View):
 
 
     def on_update(self, delta_time):
-        pass
+        if time.time() - self.last_input_time > AFK_SCROLL_TIME:
+            # self.window.show_view( App.get_instance().screensaver_view )
+            # simulate keypress
+            self.on_key_press(arcade.key.DOWN, 0)
 
 
     def on_draw(self):
-
         width, height = self.window.get_size()
         arcade.start_render()
 
@@ -80,12 +84,15 @@ class GameSelectView(arcade.View):
         for i, item in enumerate(self.menu_items):
             if i == self.selected_index:
                 color = arcade.color.YELLOW
+                arcade.draw_text(">", x - 20, y - i * 20, color, font_size=16, anchor_x="left")
             else:
                 color = arcade.color.GRAY
 
             # text = self.menu_items[self.selected_index].name
             text = item.game_name
             arcade.draw_text(text, x, y - i * 20, color, font_size=16, anchor_x="left")
+        
+        self.flash_free_play()
 
         image = self.menu_items[self.selected_index].image
         image_width = image.width * 0.5
@@ -94,6 +101,8 @@ class GameSelectView(arcade.View):
 
 
     def on_key_press(self, symbol: int, modifiers: int):
+        self.last_input_time = time.time()
+
         if symbol == arcade.key.UP:
             self.selected_index = (self.selected_index - 1) % len(self.menu_items)
         elif symbol == arcade.key.DOWN:
@@ -123,8 +132,10 @@ class GameSelectView(arcade.View):
             # doesn't do anything...?  Is it because I'm no in a draw loop or something????
             # arcade.set_background_color(arcade.color.BLACK)
             # arcade.start_render()
-            if FULLSCREEN:
-                self.window.set_fullscreen(False)
+            
+            # DEPRECATED:
+            # if FULLSCREEN:
+                # self.window.set_fullscreen(False)
             # self.window.set_visible(False) # doesn't do anything...?
             # self.window.minimize()
 
@@ -140,5 +151,17 @@ class GameSelectView(arcade.View):
             # arcade.set_background_color(arcade.color.BLACK)
             # self.window.set_visible(True) # doesn't do anything...?
             # self.window.maximize()
-            if FULLSCREEN:
-                self.window.set_fullscreen(True)
+
+            # DEPRECATED:
+            # if FULLSCREEN:
+            #     self.window.set_fullscreen(True)
+
+
+
+    def flash_free_play(self):
+        if FREE_PLAY:
+            alpha = abs((time.time() % 4) - 1)  # calculate alpha value for fade in/out effect
+            arcade.draw_text("FREE PLAY", 10, 10, arcade.color.GREEN + (int(alpha * 255),), font_size=16, anchor_x="left")
+        else:
+            alpha = abs((time.time() % 2) - 1)  # calculate alpha value for fade in/out effect
+            arcade.draw_text(f"CREDITS: {self.credits}", 10, 10, arcade.color.RED + (int(alpha * 255),), font_size=16, anchor_x="left")

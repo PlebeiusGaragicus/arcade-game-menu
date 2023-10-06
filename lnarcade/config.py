@@ -21,6 +21,10 @@ SHOW_MOUSE = False
 SCREEN_TITLE = "Lightning Arcade"
 SPLASH_SCREEN_TIME_DELAY = 0.5
 
+#TODO - maybe each app should play a gif instead of display a static image
+AFK_SCROLL_TIME = 20  # seconds - the time it takes to scroll through the menu when AFK
+
+
 # SNES9X_EMULATOR_PATH = "flatpak run com.snes9x.Snes9x"
 
 @dataclass
