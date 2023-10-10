@@ -7,7 +7,7 @@ logger = logging.getLogger()
 
 import arcade
 
-from lnarcade.config import APP_FOLDER, MY_DIR, FREE_PLAY, AFK_SCROLL_TIME
+from lnarcade.config import APP_FOLDER, MY_DIR
 from lnarcade.app import App
 from lnarcade.utilities.find_games import get_app_manifests
 from lnarcade.views.error import ErrorModalView
@@ -69,7 +69,7 @@ class GameSelectView(arcade.View):
 
 
     def on_update(self, delta_time):
-        if time.time() - self.last_input_time > AFK_SCROLL_TIME:
+        if time.time() - self.last_input_time > int(os.getenv("AFK_SCROLL_TIME", 300)):
             # self.window.show_view( App.get_instance().screensaver_view )
             # simulate keypress
             self.on_key_press(arcade.key.DOWN, 0)
@@ -159,9 +159,10 @@ class GameSelectView(arcade.View):
 
 
     def flash_free_play(self):
-        if FREE_PLAY:
-            alpha = abs((time.time() % 4) - 1)  # calculate alpha value for fade in/out effect
-            arcade.draw_text("FREE PLAY", 10, 10, arcade.color.GREEN + (int(alpha * 255),), font_size=16, anchor_x="left")
+        if os.getenv("FREE_PLAY", False):
+            # alpha = abs((time.time() % 4) - 1)  # calculate alpha value for fade in/out effect
+            alpha = abs((time.time() % 2) - 1)  # calculate alpha value for fade in/out effect
+            arcade.draw_text("FREE PLAY", 10, 10, arcade.color.GREEN + (int(alpha * 255),), font_size=26, anchor_x="left")
         else:
             alpha = abs((time.time() % 2) - 1)  # calculate alpha value for fade in/out effect
-            arcade.draw_text(f"CREDITS: {self.credits}", 10, 10, arcade.color.RED + (int(alpha * 255),), font_size=16, anchor_x="left")
+            arcade.draw_text(f"CREDITS: {self.credits}", 10, 10, arcade.color.RED + (int(alpha * 255),), font_size=26, anchor_x="left")

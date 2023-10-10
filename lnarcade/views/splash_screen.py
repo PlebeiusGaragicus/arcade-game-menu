@@ -1,7 +1,7 @@
 import os
 import time
 import logging
-# logger = logging.getLogger("lnarcade")
+
 logger = logging.getLogger()
 
 import arcade

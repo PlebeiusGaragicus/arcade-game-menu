@@ -9,7 +9,7 @@ logger = logging.getLogger()
 import arcade
 
 from lnarcade.logger import setup_logging
-from lnarcade.config import Config, MY_DIR, SCREEN_TITLE
+from lnarcade.config import MY_DIR, DOT_ENV_PATH, create_default_dot_env
 
 
 class Singleton:
@@ -58,10 +58,14 @@ class App(Singleton):
         cls._instance = app
 
         # load environment variables
-        if dotenv.load_dotenv() == False:
+        if dotenv.load_dotenv( DOT_ENV_PATH ) == False:
             # TODO: should I make this a critical error?
             print("WARNING!!!  No .env file found!!!")
-            exit(1)
+            create_default_dot_env()
+            # exit(1)
+        else:
+            with open(DOT_ENV_PATH, 'r') as f:
+                print( f.read() )
 
         print('\n\n\n\n\n###############################################')
         setup_logging()
@@ -69,8 +73,8 @@ class App(Singleton):
 
         logging.debug("lnarcade installed at: %s", MY_DIR)
 
-        app.config = Config()
-        logger.debug("Config loaded: %s", app.config)
+        # app.config = Config()
+        # logger.debug("Config loaded: %s", app.config)
 
 
         app.width, app.height = arcade.get_display_size()
@@ -79,7 +83,8 @@ class App(Singleton):
         #     app.window = arcade.Window(title=SCREEN_TITLE, fullscreen=True)
         # else:
         #     app.window = arcade.Window(width=width, height=height, title=SCREEN_TITLE, fullscreen=False, style="borderless")
-        app.window = arcade.Window(width=app.width, height=app.height, title=SCREEN_TITLE, fullscreen=False, style="borderless")
+
+        app.window = arcade.Window(width=app.width, height=app.height, title="lnarcade", fullscreen=False, style="borderless")
 
 
         # TODO: setup threads for hardware buttons
@@ -104,5 +109,4 @@ class App(Singleton):
 
 def main():
     """ This is the entry point for the application when installed via setup.py"""
-    from lnarcade.app import App
     App.get_instance().start()
