@@ -11,6 +11,7 @@ import arcade
 from lnarcade.logger import setup_logging
 from lnarcade.config import MY_DIR, DOT_ENV_PATH, create_default_dot_env
 
+GAME_WINDOW: arcade.Window = None
 
 class Singleton:
     _instance = None
@@ -73,10 +74,6 @@ class App(Singleton):
 
         logging.debug("lnarcade installed at: %s", MY_DIR)
 
-        # app.config = Config()
-        # logger.debug("Config loaded: %s", app.config)
-
-
         app.width, app.height = arcade.get_display_size()
 
         # if FULLSCREEN:
@@ -92,7 +89,13 @@ class App(Singleton):
         # controller.microsd.start_detection()
 
         app.screensaver_activation_ms = 10 * 1000
-        app.window.set_mouse_visible(False)
+
+        # if os.getenv("SCREENSAVER_ENABLED", "1") == "1":
+        #     from lnarcade.views.screensaver import ScreensaverView
+        #     app.screensaver_view = ScreensaverView()
+
+        if os.getenv("DEBUG", False):
+            app.window.set_mouse_visible(False)
         # arcade.run() # THIS IS BLOCKING and has been moved to start()
 
         return cls._instance
@@ -100,6 +103,9 @@ class App(Singleton):
 
     def start(self):
         logger.debug("App.get_instance().start()")
+
+        global GAME_WINDOW
+        GAME_WINDOW = self.window
 
         from lnarcade.views.splash_screen import SplashScreen
         view = SplashScreen()

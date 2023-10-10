@@ -1,5 +1,6 @@
 import os
 import time
+
 from dataclasses import dataclass
 import subprocess
 import logging
@@ -8,14 +9,14 @@ logger = logging.getLogger()
 import arcade
 
 from lnarcade.config import APP_FOLDER, MY_DIR
-from lnarcade.app import App
+from lnarcade.app import App, GAME_WINDOW
 from lnarcade.utilities.find_games import get_app_manifests
 from lnarcade.views.error import ErrorModalView
 
 
 
 @dataclass
-class MenuItem:
+class GameListItem:
     module_name: str
     game_name: str
     manifest_dict: dict
@@ -41,6 +42,8 @@ class GameSelectView(arcade.View):
         self.menu_items: list = []
         self.credits: int = 0
 
+        self.mouse_pos = (0, 0)
+
         manifests = get_app_manifests()
         logger.debug("manifests: %s", manifests)
 
@@ -50,7 +53,7 @@ class GameSelectView(arcade.View):
             try:
                 game_name = f"{manifest_dict['name']}"
 
-                self.menu_items.append( MenuItem(app_folder_name, game_name, manifest_dict, image_path) )
+                self.menu_items.append( GameListItem(app_folder_name, game_name, manifest_dict, image_path) )
             except KeyError:
                 logger.error(f"KeyError in {app_folder_name} manifest.json")
                 continue
@@ -76,28 +79,33 @@ class GameSelectView(arcade.View):
 
 
     def on_draw(self):
-        width, height = self.window.get_size()
         arcade.start_render()
 
-        x = width * 0.1
-        y = height // 2
-        for i, item in enumerate(self.menu_items):
+        x = GAME_WINDOW.width * 0.1
+        y = GAME_WINDOW.height // 2
+        for i, menu_item in enumerate(self.menu_items):
             if i == self.selected_index:
                 color = arcade.color.YELLOW
-                arcade.draw_text(">", x - 20, y - i * 20, color, font_size=16, anchor_x="left")
+                menu_item_size = 40
+                arcade.draw_text(">", x - 40, y - i * 50, color, font_size=40, anchor_x="left")
             else:
-                color = arcade.color.GRAY
+                menu_item_size = 30
+                color = arcade.color.AIR_FORCE_BLUE
 
-            # text = self.menu_items[self.selected_index].name
-            text = item.game_name
-            arcade.draw_text(text, x, y - i * 20, color, font_size=16, anchor_x="left")
-        
-        self.flash_free_play()
+            arcade.draw_text(menu_item.game_name, x, y - i * 50, color, font_size=menu_item_size, anchor_x="left")
 
+
+        # SHOW GAME ARTWORK
         image = self.menu_items[self.selected_index].image
         image_width = image.width * 0.5
         image_height = image.height * 0.5
-        arcade.draw_texture_rectangle(width * 0.8, height * 0.5, image_width, image_height, image, 0)
+        arcade.draw_texture_rectangle(GAME_WINDOW.width * 0.8, GAME_WINDOW.height * 0.5, image_width, image_height, image, 0)
+
+        self.flash_free_play()
+
+        # SHOW MOUSE POSITION
+        if os.getenv("DEBUG", False):
+            self.show_mouse_position()
 
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -123,7 +131,7 @@ class GameSelectView(arcade.View):
 
             # check for sufficient 'coins'
             logger.debug("Checking for sufficient coins")
-            if not FREE_PLAY:
+            if not os.getenv("FREE_PLAY", False):
                 # toast("Excuse me... YOU NEED TO PAY UP!!") #TODO
                 logger.error("You don't have enough coins")
                 return
@@ -156,6 +164,24 @@ class GameSelectView(arcade.View):
             # if FULLSCREEN:
             #     self.window.set_fullscreen(True)
 
+    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
+        self.mouse_pos = (x, y)
+        # return super().on_mouse_motion(x, y, dx, dy)
+    
+    def show_mouse_position(self):
+        anchor_x = "left"
+        offset = 20
+
+        if self.mouse_pos[0] > GAME_WINDOW.width * 0.5:
+            anchor_x = "right"
+            offset = -20
+
+        if self.mouse_pos[1] > GAME_WINDOW.height * 0.5:
+            offset -= offset * 2
+
+        arcade.draw_text(f"{self.mouse_pos}", self.mouse_pos[0], self.mouse_pos[1] + offset, arcade.color.WHITE, font_size=16, anchor_x=anchor_x)
+        arcade.draw_text(f"{round(self.mouse_pos[0] / GAME_WINDOW.width * 100, 0)}%  {round(self.mouse_pos[1] / GAME_WINDOW.height * 100, 0)}%", self.mouse_pos[0], self.mouse_pos[1] + offset * 2, arcade.color.GREEN, font_size=16, anchor_x=anchor_x)
+        arcade.draw_point(self.mouse_pos[0], self.mouse_pos[1], arcade.color.RED, 5)
 
 
     def flash_free_play(self):
