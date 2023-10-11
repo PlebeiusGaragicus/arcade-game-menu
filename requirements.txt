@@ -1,2 +1,5 @@
 python-dotenv
 arcade
+
+# rainbowio
+adafruit-circuitpython-seesaw

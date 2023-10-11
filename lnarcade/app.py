@@ -3,13 +3,13 @@ import threading
 import dotenv
 
 import logging
-# logger = logging.getLogger("lnarcade")
 logger = logging.getLogger()
 
 import arcade
 
 from lnarcade.logger import setup_logging
 from lnarcade.config import MY_DIR, DOT_ENV_PATH, create_default_dot_env
+from lnarcade.control.controlmanager import ControlManager
 
 GAME_WINDOW: arcade.Window = None
 
@@ -83,8 +83,7 @@ class App(Singleton):
 
         app.window = arcade.Window(width=app.width, height=app.height, title="lnarcade", fullscreen=False, style="borderless")
 
-
-        # TODO: setup threads for hardware buttons
+        app.controlmanager = ControlManager()
         # controller.microsd = MicroSD.get_instance()
         # controller.microsd.start_detection()
 
@@ -107,12 +106,23 @@ class App(Singleton):
         global GAME_WINDOW
         GAME_WINDOW = self.window
 
+        # start seperate thread to run control manager
+        control_thread = threading.Thread(target=self.controlmanager.run)
+        control_thread.start()
+
         from lnarcade.views.splash_screen import SplashScreen
         view = SplashScreen()
         self.window.show_view(view)
 
-        arcade.run()
+        try:
+            arcade.run()
+        except KeyboardInterrupt:
+            logger.warning("KeyboardInterrupt")
 
+        
+        control_thread.join()
+
+# NOTE: since we are using Debian 12 we can't really `pip install .`
 # def main():
 #     """ This is the entry point for the application when installed via setup.py"""
     # App.get_instance().start()

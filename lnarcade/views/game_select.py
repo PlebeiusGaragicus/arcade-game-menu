@@ -1,10 +1,11 @@
 import os
 import time
+import logging
+logger = logging.getLogger()
 
 from dataclasses import dataclass
 import subprocess
-import logging
-logger = logging.getLogger()
+
 
 import arcade
 
