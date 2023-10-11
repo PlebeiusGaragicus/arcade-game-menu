@@ -113,6 +113,6 @@ class App(Singleton):
 
         arcade.run()
 
-def main():
-    """ This is the entry point for the application when installed via setup.py"""
-    App.get_instance().start()
+# def main():
+#     """ This is the entry point for the application when installed via setup.py"""
+    # App.get_instance().start()
