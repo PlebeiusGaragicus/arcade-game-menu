@@ -62,10 +62,11 @@ class App(Singleton):
         # load environment variables
         if dotenv.load_dotenv( DOT_ENV_PATH ) == False:
             # TODO: should I make this a critical error?
-            print("WARNING!!!  No .env file found!!!")
+            print("WARNING!!!  No .env file found at {}".format(DOT_ENV_PATH))
             create_default_dot_env()
         else:
             with open(DOT_ENV_PATH, 'r') as f:
+                print("DOT_ENV_PATH: %s", DOT_ENV_PATH)
                 print( f.read() )
 
         print('\n\n\n\n\n###############################################')
@@ -99,7 +100,7 @@ class App(Singleton):
 
         # start seperate thread to run control manager
         control_thread = threading.Thread(target=self.controlmanager.run)
-        control_thread.daemon = True
+        control_thread.daemon = True # this is needed so that when the main process exits the control thread will also exit
         control_thread.start()
 
         backend_thread = threading.Thread(target=self.backend.start_server)

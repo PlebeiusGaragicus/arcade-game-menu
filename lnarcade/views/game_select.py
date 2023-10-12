@@ -23,6 +23,7 @@ class GameListItem:
     manifest_dict: dict
     image_path: str
     image: arcade.Texture = None
+    process: subprocess.Popen = None
 
     def __post_init__(self):  # This method is automatically called after `__init__`
         try:
@@ -89,7 +90,7 @@ class GameSelectView(arcade.View):
             if i == self.selected_index:
                 color = arcade.color.YELLOW
                 menu_item_size = 40
-                arcade.draw_text(">", x - 40, y - i * 50, color, font_size=40, anchor_x="left")
+                # arcade.draw_text(">", x - 40, y - i * 50, color, font_size=40, anchor_x="left")
             else:
                 menu_item_size = 30
                 color = arcade.color.AIR_FORCE_BLUE
@@ -120,10 +121,17 @@ class GameSelectView(arcade.View):
 
         # QUIT
         elif symbol == arcade.key.ESCAPE:
+            arcade.Window.close( GAME_WINDOW )
             exit(0)
 
-        # elif symbol == arcade.key.TAB:
-            # self.window.minimize()
+
+        elif symbol == arcade.key.TAB:
+            if self.process is not None:
+                # self.process.kill()
+                self.process.terminate()
+                self.process = None
+
+
 
         # LAUNCH APP
         elif symbol == arcade.key.ENTER:
@@ -152,11 +160,13 @@ class GameSelectView(arcade.View):
             args = ["python3", "-m", selected_app]
             cwd = os.path.expanduser(f"~/{APP_FOLDER}")
             logger.debug(f"subprocess.run({args=}, {cwd=})")
-            ret_code = subprocess.run(args, cwd=cwd).returncode # This is a blocking call - wait for game to run and exit
+            # ret_code = subprocess.run(args, cwd=cwd).returncode # This is a blocking call - wait for game to run and exit
 
-            if ret_code != 0:
-                logger.error(f"app '{selected_app}' returned non-zero! {ret_code=}")
-                self.window.show_view( ErrorModalView("App crashed!", self) )
+            self.process = subprocess.Popen(args, cwd=cwd)
+
+            # if ret_code != 0:
+            #     logger.error(f"app '{selected_app}' returned non-zero! {ret_code=}")
+            #     self.window.show_view( ErrorModalView("App crashed!", self) )
 
             # arcade.set_background_color(arcade.color.BLACK)
             # self.window.set_visible(True) # doesn't do anything...?

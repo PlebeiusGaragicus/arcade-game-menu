@@ -1,3 +1,12 @@
+tips = """
+https://github.com/pywebio/PyWebIO
+
+https://pywebio.readthedocs.io/en/latest/guide.html?highlight=example#layout
+
+"""
+
+
+
 import pywebio
 
 class ArcadeServerPage():

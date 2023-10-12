@@ -1,3 +1,19 @@
+tips = """
+https://www.youtube.com/watch?v=Rt5xtIyxgco
+
+https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/linux
+
+https://learn.adafruit.com/custom-hid-devices-in-circuitpython
+
+https://learn.adafruit.com/adafruit-i2c-qt-rotary-encoder/python-circuitpython
+
+https://learn.adafruit.com/circuitpython-libraries-on-any-computer-with-mcp2221/post-install-checks
+
+
+"""
+
+
+
 import os
 import platform
 import logging

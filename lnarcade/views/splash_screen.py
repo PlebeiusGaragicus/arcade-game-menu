@@ -1,3 +1,10 @@
+TODO = """
+xmen splash screen
+https://www.youtube.com/watch?v=sXNzMHdLysE&list=PLDJuQJmXOz3zp3IhkvAHu4rVd3GWLSTnS
+
+
+"""
+
 import os
 import time
 import logging
