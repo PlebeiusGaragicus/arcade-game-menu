@@ -1,5 +1,6 @@
 import os
 import threading
+import subprocess
 import dotenv
 
 import logging
@@ -9,8 +10,8 @@ import arcade
 
 from lnarcade.logger import setup_logging
 from lnarcade.config import MY_DIR, DOT_ENV_PATH, create_default_dot_env
-from lnarcade.control.controlmanager import ControlManager
-from lnarcade.backend.server import ArcadeServerPage
+# from lnarcade.control.controlmanager import ControlManager
+# from lnarcade.backend.server import ArcadeServerPage
 
 GAME_WINDOW: arcade.Window = None
 
@@ -37,6 +38,7 @@ class App(Singleton):
     # storage: SeedStorage = None
     # settings: Settings = None
     window: arcade.Window = None
+    process: subprocess.Popen = None
 
 
     @classmethod
@@ -85,6 +87,8 @@ class App(Singleton):
         app.window = arcade.Window(width=app.width, height=app.height, title="lnarcade", fullscreen=False, style="borderless")
         app.window.set_mouse_visible(False)
 
+        from lnarcade.control.controlmanager import ControlManager
+        from lnarcade.backend.server import ArcadeServerPage
         app.controlmanager = ControlManager()
         app.backend = ArcadeServerPage()
 
@@ -121,3 +125,11 @@ class App(Singleton):
 
         logger.debug("App.get_instance().start() - END")
         exit(0)
+
+    def kill_running_process(self):
+        if self.process is None:
+            logger.warning("No process to kill")
+            return
+        
+        self.process.terminate()
+        self.process = None

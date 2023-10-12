@@ -23,7 +23,6 @@ class GameListItem:
     manifest_dict: dict
     image_path: str
     image: arcade.Texture = None
-    process: subprocess.Popen = None
 
     def __post_init__(self):  # This method is automatically called after `__init__`
         try:
@@ -35,16 +34,23 @@ class GameListItem:
 
 
 
+
+
+
 class GameSelectView(arcade.View):
     def __init__(self):
         super().__init__()
         self.alpha = 0  # initialize alpha to 0 (fully transparent)
+        self.mouse_pos = (0, 0)
         self.selected_index = 0
         self.last_input_time = time.time()
         self.menu_items: list = []
         self.credits: int = 0
+        # self.process: subprocess.Popen = None
 
-        self.mouse_pos = (0, 0)
+        self.A_held = False
+        self.show_mouse_pos = False
+
 
         manifests = get_app_manifests()
         logger.debug("manifests: %s", manifests)
@@ -105,6 +111,7 @@ class GameSelectView(arcade.View):
         arcade.draw_texture_rectangle(GAME_WINDOW.width * 0.8, GAME_WINDOW.height * 0.5, image_width, image_height, image, 0)
 
         self.flash_free_play()
+        self.show_configuration()
 
         # SHOW MOUSE POSITION
         if os.getenv("DEBUG", False):
@@ -118,20 +125,22 @@ class GameSelectView(arcade.View):
             self.selected_index = (self.selected_index - 1) % len(self.menu_items)
         elif symbol == arcade.key.DOWN:
             self.selected_index = (self.selected_index + 1) % len(self.menu_items)
+        
+        elif symbol == arcade.key.A:
+            self.A_held = True
+        elif symbol == arcade.key.B:
+            self.show_mouse_pos = not self.show_mouse_pos
 
         # QUIT
         elif symbol == arcade.key.ESCAPE:
             arcade.Window.close( GAME_WINDOW )
             exit(0)
 
-
-        elif symbol == arcade.key.TAB:
-            if self.process is not None:
-                # self.process.kill()
-                self.process.terminate()
-                self.process = None
-
-
+        # elif symbol == arcade.key.TAB:
+        #     if self.process is not None:
+        #         # self.process.kill()
+        #         self.process.terminate()
+        #         self.process = None
 
         # LAUNCH APP
         elif symbol == arcade.key.ENTER:
@@ -162,7 +171,8 @@ class GameSelectView(arcade.View):
             logger.debug(f"subprocess.run({args=}, {cwd=})")
             # ret_code = subprocess.run(args, cwd=cwd).returncode # This is a blocking call - wait for game to run and exit
 
-            self.process = subprocess.Popen(args, cwd=cwd)
+            # self.process = subprocess.Popen(args, cwd=cwd)
+            App.get_instance().process = subprocess.Popen(args, cwd=cwd)
 
             # if ret_code != 0:
             #     logger.error(f"app '{selected_app}' returned non-zero! {ret_code=}")
@@ -176,17 +186,25 @@ class GameSelectView(arcade.View):
             # if FULLSCREEN:
             #     self.window.set_fullscreen(True)
 
+    def on_key_release(self, key: int, modifiers: int):
+        if key == arcade.key.A:
+            self.A_held = False
+
+
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
         self.mouse_pos = (x, y)
         # return super().on_mouse_motion(x, y, dx, dy)
     
+
     def show_mouse_position(self):
+        if self.show_mouse_pos is False:
+            return
+
         anchor_x = "left"
         offset = 20
 
         if self.mouse_pos[0] > GAME_WINDOW.width * 0.5:
             anchor_x = "right"
-            offset = -20
 
         if self.mouse_pos[1] > GAME_WINDOW.height * 0.5:
             offset -= offset * 2
@@ -204,3 +222,10 @@ class GameSelectView(arcade.View):
         else:
             alpha = abs((time.time() % 2) - 1)  # calculate alpha value for fade in/out effect
             arcade.draw_text(f"CREDITS: {self.credits}", 10, 10, arcade.color.RED + (int(alpha * 255),), font_size=26, anchor_x="left")
+
+
+    def show_configuration(self):
+        if self.A_held is False:
+            return
+
+        arcade.draw_text("IP: 192.168.4.6999", GAME_WINDOW.width * 0.5, GAME_WINDOW.height * 0.1, arcade.color.GRAPE, font_size=16, anchor_x="center")
