@@ -99,8 +99,11 @@ class App(Singleton):
 
         # start seperate thread to run control manager
         control_thread = threading.Thread(target=self.controlmanager.run)
-        backend_thread = threading.Thread(target=self.backend.start_server)
+        control_thread.daemon = True
         control_thread.start()
+
+        backend_thread = threading.Thread(target=self.backend.start_server)
+        backend_thread.daemon = True
         backend_thread.start()
 
         from lnarcade.views.splash_screen import SplashScreen
@@ -116,3 +119,4 @@ class App(Singleton):
             backend_thread.join(0.0)
 
         logger.debug("App.get_instance().start() - END")
+        exit(0)

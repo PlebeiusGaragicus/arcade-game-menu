@@ -17,8 +17,38 @@ sudo systemctl status lnarcade.service
 sudo journalctl -u lnarcade.service
 ```
 
+2. install `LightDM`
 
+```sh
+sudo apt install -y lightdm # --> Choose LightDM as Default!!
 
+sudo nano /usr/share/xsessions/arcade.desktop
+```
+
+```txt
+[Desktop Entry]
+Name=Arcade Kiosk Mode
+Comment=Start Arcade in Kiosk Mode
+Exec=/home/satoshi/arcade-game-menu/run
+Type=Application
+```
+
+```sh
+sudo chmod +x /home/satoshi/arcade-game-menu/run
+
+sudo nano /etc/lightdm/lightdm.conf
+```
+
+```txt
+[Seat:*]
+autologin-user=satoshi
+autologin-session=arcade
+user-session=arcade
+```
+
+```sh
+sudo reboot
+```
 
 
 

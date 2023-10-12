@@ -120,8 +120,7 @@ class GameSelectView(arcade.View):
 
         # QUIT
         elif symbol == arcade.key.ESCAPE:
-            self.window.close()
-            # exit(0)
+            exit(0)
 
         # elif symbol == arcade.key.TAB:
             # self.window.minimize()
