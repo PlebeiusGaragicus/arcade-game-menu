@@ -6,6 +6,7 @@ https://github.com/pywebio/PyWebIO
 https://pywebio.readthedocs.io/en/latest/guide.html?highlight=example#layout
 """
 
+import time
 import logging
 logger = logging.getLogger()
 
@@ -32,6 +33,7 @@ class ArcadeServerPage():
     def command(self, action):
         if action == BUTTON_RESTART:
             logger.warning("Killing the menu system!")
+            App.get_instance().kill_running_process() # make sure any app doesn't keep running
             App.get_instance().window.close()
             exit(0)
 
@@ -61,6 +63,8 @@ class ArcadeServerPage():
     def check_password(self):
         password = pywebio.input.input("Enter password", type=pywebio.input.PASSWORD)
         if password != self.password:
+            # TODO - can I find a way to slow this down so it can't be brute forced?
+            time.sleep(5)
             return
 
         self.backend_page()

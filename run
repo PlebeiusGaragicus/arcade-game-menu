@@ -2,6 +2,13 @@
 
 cd "$(dirname "$0")"
 
+export BLINKA_MCP2221=1
+
 source venv/bin/activate
 
-python3 -m lnarcade
+# python3 -m lnarcade
+
+while true; do
+    /usr/bin/python3 -m lnarcade >> /home/satoshi/lnarcade.log 2>&1
+    sleep 2
+done

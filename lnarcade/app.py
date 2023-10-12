@@ -61,6 +61,8 @@ class App(Singleton):
         app = cls.__new__(cls)
         cls._instance = app
 
+        print('\n\n\n\n\n###############################################')
+        
         # load environment variables
         if dotenv.load_dotenv( DOT_ENV_PATH ) == False:
             # TODO: should I make this a critical error?
@@ -71,7 +73,6 @@ class App(Singleton):
                 print("DOT_ENV_PATH: %s", DOT_ENV_PATH)
                 print( f.read() )
 
-        print('\n\n\n\n\n###############################################')
         setup_logging()
         logger.debug("Configuring application instance...")
 
@@ -130,6 +131,6 @@ class App(Singleton):
         if self.process is None:
             logger.warning("No process to kill")
             return
-        
+
         self.process.terminate()
         self.process = None
