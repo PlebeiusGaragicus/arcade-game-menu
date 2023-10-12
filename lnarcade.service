@@ -1,13 +1,15 @@
 [Unit]
-Description=LNArcade Launcher Service
+Description=Lightning Arcade
 After=network.target
 
 [Service]
-ExecStart=lnarcade
+ExecStart=/usr/bin/python3 -m lnarcade
 Restart=always
 User=satoshi
+Group=satoshi
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/satoshi/.Xauthority
+WorkingDirectory=/home/satoshi/arcade-game-menu/
 
 [Install]
 WantedBy=multi-user.target

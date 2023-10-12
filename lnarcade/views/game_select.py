@@ -69,6 +69,7 @@ class GameSelectView(arcade.View):
         if self.menu_items == []:
             App.get_instance().window.show_view( ErrorModalView("No manifests found!", None) )
 
+        # we will keep the selection on the last game ran
         # self.selected_index = 0
 
 
@@ -120,6 +121,7 @@ class GameSelectView(arcade.View):
         # QUIT
         elif symbol == arcade.key.ESCAPE:
             self.window.close()
+            # exit(0)
 
         # elif symbol == arcade.key.TAB:
             # self.window.minimize()

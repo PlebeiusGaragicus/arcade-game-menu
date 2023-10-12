@@ -1,5 +1,27 @@
 # INSTALL
 
+
+1. copy over the `systemd` service
+
+```sh
+sudo cp lnarcade.service /etc/systemd/system/lnarcade.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable lnarcade.service
+sudo systemctl start lnarcade.service
+
+# sanity check on status
+sudo systemctl status lnarcade.service
+
+# look at the logs?
+sudo journalctl -u lnarcade.service
+```
+
+
+
+
+
+
 ---
 
 ### FOR FT232H

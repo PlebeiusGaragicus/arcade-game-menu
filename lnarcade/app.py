@@ -10,6 +10,7 @@ import arcade
 from lnarcade.logger import setup_logging
 from lnarcade.config import MY_DIR, DOT_ENV_PATH, create_default_dot_env
 from lnarcade.control.controlmanager import ControlManager
+from lnarcade.backend.server import ArcadeServerPage
 
 GAME_WINDOW: arcade.Window = None
 
@@ -63,7 +64,6 @@ class App(Singleton):
             # TODO: should I make this a critical error?
             print("WARNING!!!  No .env file found!!!")
             create_default_dot_env()
-            # exit(1)
         else:
             with open(DOT_ENV_PATH, 'r') as f:
                 print( f.read() )
@@ -82,20 +82,11 @@ class App(Singleton):
         #     app.window = arcade.Window(width=width, height=height, title=SCREEN_TITLE, fullscreen=False, style="borderless")
 
         app.window = arcade.Window(width=app.width, height=app.height, title="lnarcade", fullscreen=False, style="borderless")
+        app.window.set_mouse_visible(False)
 
         app.controlmanager = ControlManager()
-        # controller.microsd = MicroSD.get_instance()
-        # controller.microsd.start_detection()
+        app.backend = ArcadeServerPage()
 
-        app.screensaver_activation_ms = 10 * 1000
-
-        # if os.getenv("SCREENSAVER_ENABLED", "1") == "1":
-        #     from lnarcade.views.screensaver import ScreensaverView
-        #     app.screensaver_view = ScreensaverView()
-
-        if os.getenv("DEBUG", False):
-            app.window.set_mouse_visible(False)
-        # arcade.run() # THIS IS BLOCKING and has been moved to start()
 
         return cls._instance
 
@@ -108,7 +99,9 @@ class App(Singleton):
 
         # start seperate thread to run control manager
         control_thread = threading.Thread(target=self.controlmanager.run)
+        backend_thread = threading.Thread(target=self.backend.start_server)
         control_thread.start()
+        backend_thread.start()
 
         from lnarcade.views.splash_screen import SplashScreen
         view = SplashScreen()
@@ -118,11 +111,8 @@ class App(Singleton):
             arcade.run()
         except KeyboardInterrupt:
             logger.warning("KeyboardInterrupt")
+            arcade.Window.close(self.window)
+            control_thread.join(0.0)
+            backend_thread.join(0.0)
 
-        
-        control_thread.join()
-
-# NOTE: since we are using Debian 12 we can't really `pip install .`
-# def main():
-#     """ This is the entry point for the application when installed via setup.py"""
-    # App.get_instance().start()
+        logger.debug("App.get_instance().start() - END")
