@@ -10,8 +10,6 @@ import arcade
 
 from lnarcade.logger import setup_logging
 from lnarcade.config import MY_DIR, DOT_ENV_PATH, create_default_dot_env
-# from lnarcade.control.controlmanager import ControlManager
-# from lnarcade.backend.server import ArcadeServerPage
 
 GAME_WINDOW: arcade.Window = None
 
@@ -91,7 +89,7 @@ class App(Singleton):
         from lnarcade.control.controlmanager import ControlManager
         from lnarcade.backend.server import ArcadeServerPage
         app.controlmanager = ControlManager()
-        app.backend = ArcadeServerPage()
+        app.backend = ArcadeServerPage( DOT_ENV_PATH )
 
 
         return cls._instance
