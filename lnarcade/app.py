@@ -132,3 +132,7 @@ class App(Singleton):
 
         self.process.terminate()
         self.process = None
+
+
+    def get_ip_addr(self):
+        return subprocess.getoutput("hostname -I").split()[0]

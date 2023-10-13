@@ -90,25 +90,61 @@ class GameSelectView(arcade.View):
     def on_draw(self):
         arcade.start_render()
 
-        x = GAME_WINDOW.width * 0.1
-        y = GAME_WINDOW.height // 2
-        for i, menu_item in enumerate(self.menu_items):
-            if i == self.selected_index:
-                color = arcade.color.YELLOW
-                menu_item_size = 40
-                # arcade.draw_text(">", x - 40, y - i * 50, color, font_size=40, anchor_x="left")
-            else:
-                menu_item_size = 30
-                color = arcade.color.AIR_FORCE_BLUE
-
-            arcade.draw_text(menu_item.game_name, x, y - i * 50, color, font_size=menu_item_size, anchor_x="left")
-
 
         # SHOW GAME ARTWORK
         image = self.menu_items[self.selected_index].image
-        image_width = image.width * 0.5
-        image_height = image.height * 0.5
-        arcade.draw_texture_rectangle(GAME_WINDOW.width * 0.8, GAME_WINDOW.height * 0.5, image_width, image_height, image, 0)
+        image_width = GAME_WINDOW.width
+        image_height = GAME_WINDOW.height
+        arcade.draw_texture_rectangle(GAME_WINDOW.width * 0.5, GAME_WINDOW.height * 0.5, image_width, image_height, image, 0)
+
+        # Define the coordinates for the gradient effect.
+        left = 0
+        right = int(GAME_WINDOW.width * 0.5)
+        top = GAME_WINDOW.height
+        bottom = 0
+
+        # Define the width of each narrow rectangle for the gradient effect.
+        gradient_rect_width = 5
+        total_gradient_width = right - left
+
+        # Gradient strength (0 to 1): Increase to make the gradient more abrupt, decrease to make it more gentle.
+        gradient_strength = 1  # for example
+
+        for i in range(0, total_gradient_width, gradient_rect_width):
+            alpha = int(255 * gradient_strength * ((total_gradient_width - i) / total_gradient_width))
+            color = (0, 0, 0, alpha)
+            rect_x = left + i + gradient_rect_width / 2
+            arcade.draw_xywh_rectangle_filled(rect_x - gradient_rect_width / 2, bottom, gradient_rect_width, top - bottom, color)
+
+
+        x = GAME_WINDOW.width * 0.02
+        y = GAME_WINDOW.height // 2
+
+        # Calculate offset to keep the selected item in the center
+        offset = y + self.selected_index * 55
+
+        # Decide how many items to show above and below the current selection for performance optimization.
+        visible_items_margin = 10
+        start_index = max(0, self.selected_index - visible_items_margin)
+        end_index = min(len(self.menu_items), self.selected_index + visible_items_margin)
+
+        for i, menu_item in enumerate(self.menu_items[start_index:end_index]):
+            real_index = start_index + i  # because we've potentially limited our loop, we need to know the real index
+
+            if real_index == self.selected_index:
+                color = arcade.color.WHITE
+                menu_item_size = 45
+                arcade.draw_text(menu_item.game_name, x, offset - real_index * 55, color, font_size=menu_item_size, anchor_x="left", bold=True)
+            else:
+                menu_item_size = 30
+                color = arcade.color.BLUE_BELL
+                arcade.draw_text(menu_item.game_name, x, offset - real_index * 55, color, font_size=menu_item_size, anchor_x="left")
+
+        try:
+            game_type = self.menu_items[self.selected_index].manifest_dict["type"]
+            arcade.draw_text(game_type, GAME_WINDOW.width * 0.5, GAME_WINDOW.height * 0.05, arcade.color.RED, font_size=30, anchor_x="left")
+        except KeyError:
+            pass
 
         self.flash_free_play()
         self.show_configuration()
@@ -228,4 +264,5 @@ class GameSelectView(arcade.View):
         if self.A_held is False:
             return
 
-        arcade.draw_text("IP: 192.168.4.6999", GAME_WINDOW.width * 0.5, GAME_WINDOW.height * 0.1, arcade.color.GRAPE, font_size=16, anchor_x="center")
+        ip = App.get_instance().get_ip_addr()
+        arcade.draw_text(f"IP: {ip}:8080", GAME_WINDOW.width * 0.5, GAME_WINDOW.height * 0.05, arcade.color.GRAPE, font_size=16, anchor_x="center")

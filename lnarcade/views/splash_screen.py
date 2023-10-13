@@ -31,10 +31,12 @@ class SplashScreen(arcade.View):
         arcade.set_background_color(arcade.color.BLACK)
         self.start_time = time.time()
 
-        if os.getenv("DEBUG", False):
-            sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
-        else:
-            sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
+        # if os.getenv("DEBUG", False):
+        #     sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'short.wav')
+        # else:
+        #     sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
+
+        sound_path = os.path.join(MY_DIR, 'resources', 'sounds', 'theme.wav')
 
         theme_sound = arcade.sound.load_sound( sound_path )
         self.theme_len = arcade.sound.Sound.get_length( theme_sound )
@@ -44,7 +46,7 @@ class SplashScreen(arcade.View):
 
 
     def on_update(self, delta_time):
-        if time.time() > self.start_time + self.theme_len: # wait for theme to finish
+        if os.getenv("DEBUG", False) or time.time() > self.start_time + self.theme_len: # wait for theme to finish
             arcade.sound.stop_sound( self.player )
             # self.show_next_view()
 
